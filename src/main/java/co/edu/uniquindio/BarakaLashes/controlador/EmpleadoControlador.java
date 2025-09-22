@@ -6,10 +6,8 @@ import co.edu.uniquindio.BarakaLashes.servicio.EmpleadoServicio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,14 +20,33 @@ public class EmpleadoControlador {
             LoggerFactory.getLogger(EmpleadoControlador.class);
 
     @Autowired
-    private IEmpleadoServicio empleadoServicio;
+    private EmpleadoServicio empleadoServicio;
+    @Autowired
+    private EmpleadoRepositorio empleadoRepositorio;
 
     // http://localhost:8080/barakaLashes-app/empleados
     @GetMapping ("/empleados")
-
     public List<Empleado> obtenerEmpleados(){
         var empleados = empleadoServicio.listarEmpleados();
         empleados.forEach((empleado ->  logger.info(empleado.toString())));
         return empleados;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Empleado> obtenerEmpleado(@PathVariable Integer id) {
+        try {
+            Empleado empleado = empleadoServicio.buscarEmpleadoPorId(id);
+            return ResponseEntity.ok(empleado);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/empleados/{id}")
+    public void eliminarEmpleado(Integer id) throws Exception {
+        if (!empleadoRepositorio.existsById(id)) {
+            throw new Exception("El empleado con id " + id + " no existe");
+        }
+        empleadoRepositorio.deleteById(id);
     }
 }
