@@ -1,7 +1,8 @@
 package co.edu.uniquindio.BarakaLashes.controlador;
 
 import co.edu.uniquindio.BarakaLashes.modelo.Empleado;
-import co.edu.uniquindio.BarakaLashes.servicio.IEmpleadoServicio;
+import co.edu.uniquindio.BarakaLashes.repositorio.EmpleadoRepositorio;
+import co.edu.uniquindio.BarakaLashes.servicio.EmpleadoServicio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
