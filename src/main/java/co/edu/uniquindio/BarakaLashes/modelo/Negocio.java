@@ -18,10 +18,10 @@ public class Negocio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idNegocio;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "negocio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cita> citas;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "negocio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Usuario> usuarios;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

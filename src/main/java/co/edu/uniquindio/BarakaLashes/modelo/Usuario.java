@@ -35,4 +35,9 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cita> listaCitas;
+
+
+    @ManyToOne
+    @JoinColumn(name = "negocio_id")
+    private Negocio negocio;
 }

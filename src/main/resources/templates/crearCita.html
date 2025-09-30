@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendar Cita - BarakaLashes</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+
+    <h1>Agendar Nueva Cita</h1>
+
+    <form th:action="@{/citas/nueva}" th:object="${cita}" method="post" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label for="emailCliente">Email del Cliente:</label>
+            <div class="input-icon-wrapper">
+                <span class="input-icon">📧</span>
+                <input type="email" id="emailCliente" th:field="*{emailCliente}" placeholder="ejemplo@correo.com" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="nombreCita">Motivo de la Cita (Nombre):</label>
+            <input type="text" id="nombreCita" th:field="*{nombreCita}" placeholder="Cita para Pestañas Volumen Ruso" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaCita">Fecha y Hora Preferida:</label>
+            <input type="datetime-local" id="fechaCita" th:field="*{fechaCita}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Selecciona tu Servicio Principal:</label>
+            <div class="catalogo-grid">
+
+                <label class="catalogo-item">
+                    <input type="radio" th:field="*{serviciosSeleccionados}" value="CLASICAS" required>
+                    <img th:src="@{/img/clasicas.jpg}" alt="Pestañas Clásicas">
+                    <span>Clásicas</span>
+                </label>
+
+                <label class="catalogo-item">
+                    <input type="radio" th:field="*{serviciosSeleccionados}" value="VOLUMEN_RUSO" required>
+                    <img th:src="@{/img/volumen.jpg}" alt="Volumen Ruso">
+                    <span>Volumen Ruso</span>
+                </label>
+
+                <label class="catalogo-item">
+                    <input type="radio" th:field="*{serviciosSeleccionados}" value="CEJAS" required>
+                    <img th:src="@{/img/cejas.jpg}" alt="Diseño de Cejas">
+                    <span>Cejas</span>
+                </label>
+
+                <label class="catalogo-item">
+                    <input type="radio" th:field="*{serviciosSeleccionados}" value="LIFTING" required>
+                    <img th:src="@{/img/lifting.jpg}" alt="Lifting de Pestañas">
+                    <span>Lifting</span>
+                </label>
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="imagenReferencia">Sube una imagen de inspiración (Opcional):</label>
+            <input type="file" id="imagenReferencia" th:field="*{imagenReferencia}" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label for="descripcionCita">Detalles Adicionales:</label>
+            <textarea id="descripcionCita" th:field="*{descripcionCita}" rows="3" placeholder="Añade cualquier detalle sobre tu estilo o si tienes alguna alergia."></textarea>
+        </div>
+
+        <input type="hidden" th:field="*{idEmpleado}" value="1">
+
+        <div>
+            <button type="submit">Agendar Cita</button>
+        </div>
+
+    </form>
+
+</div>
+<a th:href="@{/}" class="volver-inicio">Volver al inicio</a>
+</body>
+</html>

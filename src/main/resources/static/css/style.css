@@ -1,0 +1,197 @@
+/* ---------------------------------------------------- */
+/* 1. Base y Tipografía (Colores cálidos) */
+/* ---------------------------------------------------- */
+:root {
+    /* Base más oscura para el contraste (similar al ejemplo) */
+    --color-fondo-base: #f7e6e6; /* Rosa muy claro para la base */
+    --color-principal: #F17A7E; /* Rosado/Durazno opaco (resalta la selección) */
+    --color-secundario: #FFC0CB; /* Rosa claro muy suave */
+    --color-texto: #333333; /* Texto principal oscuro */
+    --color-texto-secundario: #757575; /* Texto para etiquetas pequeñas */
+    --color-borde: rgba(255, 255, 255, 0.5);
+}
+
+body {
+    background: linear-gradient(135deg, var(--color-secundario) 0%, var(--color-principal) 100%);
+    font-family: 'Arial', sans-serif;
+    color: var(--color-texto);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* ---------------------------------------------------- */
+/* 2. Contenedor Principal (Efecto Glassmorphism Elevado) */
+/* ---------------------------------------------------- */
+.container {
+    background: rgba(255, 255, 255, 0.95); /* Menos transparente para mejor lectura */
+    border-radius: 24px; /* Bordes más redondeados */
+    padding: 30px; /* Menos padding para hacerlo más compacto */
+    backdrop-filter: blur(15px); /* Desenfoque más fuerte */
+    -webkit-backdrop-filter: blur(15px);
+    /* Eliminamos el borde, y usamos una sombra más sutil */
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
+    max-width: 400px; /* Un poco más estrecho, como una app móvil */
+    width: 90%;
+}
+
+/* ---------------------------------------------------- */
+/* 3. Títulos y Formulario */
+/* ---------------------------------------------------- */
+h1 {
+    color: var(--color-texto);
+    text-align: left; /* Título alineado a la izquierda */
+    margin-bottom: 25px;
+    font-size: 1.6em; /* Un poco más pequeño y elegante */
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 3px; /* Menos espacio, diseño más compacto */
+    font-weight: 500;
+    font-size: 0.9em;
+    color: var(--color-texto-secundario); /* Texto secundario para etiquetas */
+}
+
+input[type="email"],
+input[type="text"],
+input[type="datetime-local"],
+textarea,
+input[type="file"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: none; /* Quitamos el borde visible */
+    border-radius: 12px; /* Bordes redondeados modernos */
+    background: var(--color-fondo-base); /* Fondo que contrasta ligeramente */
+    box-sizing: border-box;
+    color: var(--color-texto);
+    font-size: 1em;
+    transition: all 0.2s ease;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+.input-icon-wrapper input:focus {
+    background: white;
+    box-shadow: 0 0 0 2px var(--color-principal); /* Borde de foco sutil y cálido */
+    outline: none;
+}
+
+/* --- Estilo para el campo de email con icono --- */
+.input-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px; /* Mover el icono para que esté dentro del input */
+    font-size: 1em;
+    color: var(--color-texto-secundario);
+    z-index: 1; /* Asegurar que esté por encima */
+}
+
+.input-icon-wrapper input[type="email"] {
+    padding-left: 35px !important;
+    background: var(--color-fondo-base);
+}
+
+/* --- 4. ESTILOS DEL CATÁLOGO VISUAL --- */
+.catalogo-grid {
+    display: flex; /* Usamos flex para una fila de desplazamiento horizontal */
+    overflow-x: scroll; /* Permitir scroll horizontal como en el ejemplo */
+    gap: 10px;
+    padding-bottom: 10px; /* Espacio para el scrollbar */
+}
+
+.catalogo-item {
+    min-width: 100px; /* Tamaño fijo para la tarjeta */
+    max-width: 100px;
+    height: auto;
+    flex-shrink: 0; /* Evita que los elementos se encojan */
+
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 8px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.catalogo-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.catalogo-item img {
+    width: 100%;
+    height: 100px; /* Altura fija para las imágenes */
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    border: 3px solid transparent;
+}
+
+.catalogo-item span {
+    font-size: 0.75em;
+    font-weight: 600;
+    color: var(--color-texto);
+}
+
+/* Ocultar el radio button nativo */
+.catalogo-item input[type="radio"] {
+    /* Mantenemos el display:none para el input */
+    display: none;
+}
+
+/* Estilo visual para el elemento seleccionado */
+.catalogo-item input[type="radio"]:checked + img {
+    border-color: var(--color-principal);
+    box-shadow: 0 0 8px var(--color-principal); /* Sombra para resaltar */
+}
+
+
+/* --- 5. BOTÓN DE ENVIAR (Estilo Pay Button) --- */
+button[type="submit"] {
+    width: 100%;
+    padding: 15px; /* Más grande como el botón "Pay" del ejemplo */
+    border: none;
+    border-radius: 12px;
+    background-color: var(--color-principal);
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 25px;
+    box-shadow: 0 6px 15px rgba(241, 122, 126, 0.4);
+}
+
+button[type="submit"]:hover {
+    background-color: #E06A6D;
+    box-shadow: 0 4px 10px rgba(241, 122, 126, 0.6);
+}
+
+/* --- 6. OTROS ELEMENTOS (Enlace Volver al Inicio) --- */
+.volver-inicio {
+    color: white;
+    text-decoration: underline;
+    font-weight: 600;
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.volver-inicio:hover {
+    color: #ffd8d8;
+}

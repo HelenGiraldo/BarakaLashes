@@ -49,4 +49,8 @@ public class Cita {
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "negocio_id")
+    private Negocio negocio;
 }
