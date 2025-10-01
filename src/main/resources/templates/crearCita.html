@@ -2,84 +2,144 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendar Cita - BarakaLashes</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 <div class="container">
-
     <h1>Agendar Nueva Cita</h1>
 
+    <!-- Mostrar mensaje de error si existe -->
+    <div th:if="${param.error}" class="error-message">
+        Error al crear la cita. Por favor, intenta nuevamente.
+    </div>
+
     <form th:action="@{/citas/nueva}" th:object="${cita}" method="post" enctype="multipart/form-data">
+        <div class="two-column-layout">
+            <!-- COLUMNA IZQUIERDA: Información del Cliente -->
+            <div class="left-column">
+                <div class="section">
+                    <h2><i class="fas fa-user"></i> Información del Cliente</h2>
 
-        <div class="form-group">
-            <label for="emailCliente">Email del Cliente:</label>
-            <div class="input-icon-wrapper">
-                <span class="input-icon">📧</span>
-                <input type="email" id="emailCliente" th:field="*{emailCliente}" placeholder="ejemplo@correo.com" required>
+                    <div class="form-group">
+                        <label for="emailCliente">Email del Cliente:</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="emailCliente" th:field="*{emailCliente}"
+                                   placeholder="ejemplo@correo.com" required class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nombreCita">Motivo de la Cita:</label>
+                        <input type="text" id="nombreCita" th:field="*{nombreCita}"
+                               placeholder="Ej: Cita para extensiones de pestañas" required
+                               class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcionCita">Detalles Adicionales:</label>
+                        <textarea id="descripcionCita" th:field="*{descripcionCita}" rows="5"
+                                  placeholder="Preferencias de estilo, alergias, comentarios especiales..."
+                                  class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: Servicios y Fecha -->
+            <div class="right-column">
+                <div class="section">
+                    <h2><i class="fas fa-calendar-alt"></i> Fecha y Servicios</h2>
+
+                    <div class="form-group">
+                        <label for="fechaCita">Fecha y Hora de la Cita:</label>
+                        <input type="datetime-local" id="fechaCita" th:field="*{fechaCita}"
+                               required class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Servicios a Realizar:</label>
+                        <div class="catalogo-grid">
+                            <!-- Servicio CLASICAS -->
+                            <label class="catalogo-item">
+                                <input type="checkbox" name="serviciosSeleccionados" value="CLASICAS">
+                                <img th:src="@{/images/clasicas.jpg}" alt="Pestañas Clásicas"
+                                     onerror="this.src='https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=150&h=150&fit=crop&crop=center'">
+                                <span>Pestañas Clásicas</span>
+                            </label>
+
+                            <!-- Servicio VOLUMEN -->
+                            <label class="catalogo-item">
+                                <input type="checkbox" name="serviciosSeleccionados" value="VOLUMEN">
+                                <img th:src="@{/images/volumen.jpg}" alt="Pestañas Volumen"
+                                     onerror="this.src='https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=150&h=150&fit=crop&crop=center'">
+                                <span>Pestañas Volumen</span>
+                            </label>
+
+                            <!-- Servicio LIFTING -->
+                            <label class="catalogo-item">
+                                <input type="checkbox" name="serviciosSeleccionados" value="LIFTING">
+                                <img th:src="@{/images/lifting.jpg}" alt="Lifting de Pestañas"
+                                     onerror="this.src='https://images.unsplash.com/photo-1596079890744-c1a0462d0975?w=150&h=150&fit=crop&crop=center'">
+                                <span>Lifting de Pestañas</span>
+                            </label>
+
+                            <!-- Servicio CEJAS -->
+                            <label class="catalogo-item">
+                                <input type="checkbox" name="serviciosSeleccionados" value="CEJAS">
+                                <img th:src="@{/images/cejas.jpg}" alt="Diseño de Cejas"
+                                     onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center'">
+                                <span>Diseño de Cejas</span>
+                            </label>
+
+                            <!-- Servicio TINTE -->
+                            <label class="catalogo-item">
+                                <input type="checkbox" name="serviciosSeleccionados" value="TINTE">
+                                <img th:src="@{/images/tinte.jpg}" alt="Tinte de Pestañas"
+                                     onerror="this.src='https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=150&h=150&fit=crop&crop=center'">
+                                <span>Tinte de Pestañas</span>
+                            </label>
+
+                            <!-- Servicio PERMANENTE -->
+                            <label class="catalogo-item">
+                                <input type="checkbox" name="serviciosSeleccionados" value="PERMANENTE">
+                                <img th:src="@{/images/permanente.jpg}" alt="Rizado Permanente"
+                                     onerror="this.src='https://images.unsplash.com/photo-1595476108010-b4d1f102b1e1?w=150&h=150&fit=crop&crop=center'">
+                                <span>Rizado Permanente</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imagenReferencia">Imagen de Referencia (Opcional):</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="imagenReferencia" th:field="*{imagenReferencia}"
+                                   accept="image/*" class="form-control file-input">
+                            <div class="file-upload-hint">
+                                <i class="fas fa-info-circle"></i>
+                                Puedes subir una foto de referencia para tu estilo deseado
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="nombreCita">Motivo de la Cita (Nombre):</label>
-            <input type="text" id="nombreCita" th:field="*{nombreCita}" placeholder="Cita para Pestañas Volumen Ruso" required>
+        <!-- Acciones del Formulario -->
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-calendar-plus"></i>
+                Agendar Mi Cita
+            </button>
         </div>
-
-        <div class="form-group">
-            <label for="fechaCita">Fecha y Hora Preferida:</label>
-            <input type="datetime-local" id="fechaCita" th:field="*{fechaCita}" required>
-        </div>
-
-        <div class="form-group">
-            <label>Selecciona tu Servicio Principal:</label>
-            <div class="catalogo-grid">
-
-                <label class="catalogo-item">
-                    <input type="radio" th:field="*{serviciosSeleccionados}" value="CLASICAS" required>
-                    <img th:src="@{/img/clasicas.jpg}" alt="Pestañas Clásicas">
-                    <span>Clásicas</span>
-                </label>
-
-                <label class="catalogo-item">
-                    <input type="radio" th:field="*{serviciosSeleccionados}" value="VOLUMEN_RUSO" required>
-                    <img th:src="@{/img/volumen.jpg}" alt="Volumen Ruso">
-                    <span>Volumen Ruso</span>
-                </label>
-
-                <label class="catalogo-item">
-                    <input type="radio" th:field="*{serviciosSeleccionados}" value="CEJAS" required>
-                    <img th:src="@{/img/cejas.jpg}" alt="Diseño de Cejas">
-                    <span>Cejas</span>
-                </label>
-
-                <label class="catalogo-item">
-                    <input type="radio" th:field="*{serviciosSeleccionados}" value="LIFTING" required>
-                    <img th:src="@{/img/lifting.jpg}" alt="Lifting de Pestañas">
-                    <span>Lifting</span>
-                </label>
-
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="imagenReferencia">Sube una imagen de inspiración (Opcional):</label>
-            <input type="file" id="imagenReferencia" th:field="*{imagenReferencia}" accept="image/*">
-        </div>
-
-        <div class="form-group">
-            <label for="descripcionCita">Detalles Adicionales:</label>
-            <textarea id="descripcionCita" th:field="*{descripcionCita}" rows="3" placeholder="Añade cualquier detalle sobre tu estilo o si tienes alguna alergia."></textarea>
-        </div>
-
-        <input type="hidden" th:field="*{idEmpleado}" value="1">
-
-        <div>
-            <button type="submit">Agendar Cita</button>
-        </div>
-
     </form>
 
+    <a th:href="@{/}" class="volver-inicio">
+        <i class="fas fa-arrow-left"></i>
+        Volver al Inicio
+    </a>
 </div>
-<a th:href="@{/}" class="volver-inicio">Volver al inicio</a>
 </body>
 </html>

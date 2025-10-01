@@ -1,92 +1,189 @@
 /* ---------------------------------------------------- */
-/* 1. Base y Tipografía (Colores cálidos) */
+/* VARIABLES Y RESET */
 /* ---------------------------------------------------- */
 :root {
-    /* Base más oscura para el contraste (similar al ejemplo) */
-    --color-fondo-base: #f7e6e6; /* Rosa muy claro para la base */
-    --color-principal: #F17A7E; /* Rosado/Durazno opaco (resalta la selección) */
-    --color-secundario: #FFC0CB; /* Rosa claro muy suave */
-    --color-texto: #333333; /* Texto principal oscuro */
-    --color-texto-secundario: #757575; /* Texto para etiquetas pequeñas */
-    --color-borde: rgba(255, 255, 255, 0.5);
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #8b5cf6;
+    --surface: rgba(255, 255, 255, 0.1);
+    --surface-hover: rgba(255, 255, 255, 0.15);
+    --surface-active: rgba(99, 102, 241, 0.2);
+    --text-primary: #ffffff;
+    --text-secondary: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border: rgba(255, 255, 255, 0.1);
+    --border-focus: rgba(99, 102, 241, 0.4);
+    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+    --shadow-hover: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+    --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ---------------------------------------------------- */
+/* BASE Y TIPOGRAFÍA */
+/* ---------------------------------------------------- */
 body {
-    background: linear-gradient(135deg, var(--color-secundario) 0%, var(--color-principal) 100%);
-    font-family: 'Arial', sans-serif;
-    color: var(--color-texto);
+    background: var(--gradient-bg);
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
 }
 
 /* ---------------------------------------------------- */
-/* 2. Contenedor Principal (Efecto Glassmorphism Elevado) */
+/* CONTENEDOR PRINCIPAL */
 /* ---------------------------------------------------- */
 .container {
-    background: rgba(255, 255, 255, 0.95); /* Menos transparente para mejor lectura */
-    border-radius: 24px; /* Bordes más redondeados */
-    padding: 30px; /* Menos padding para hacerlo más compacto */
-    backdrop-filter: blur(15px); /* Desenfoque más fuerte */
-    -webkit-backdrop-filter: blur(15px);
-    /* Eliminamos el borde, y usamos una sombra más sutil */
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
-    max-width: 400px; /* Un poco más estrecho, como una app móvil */
-    width: 90%;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* ---------------------------------------------------- */
-/* 3. Títulos y Formulario */
+/* ENCABEZADO */
 /* ---------------------------------------------------- */
 h1 {
-    color: var(--color-texto);
-    text-align: left; /* Título alineado a la izquierda */
-    margin-bottom: 25px;
-    font-size: 1.6em; /* Un poco más pequeño y elegante */
-    font-weight: bold;
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 40px;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* ---------------------------------------------------- */
+/* LAYOUT DE DOS COLUMNAS */
+/* ---------------------------------------------------- */
+.two-column-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+@media (min-width: 1024px) {
+    .two-column-layout {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+}
+
+.left-column, .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ---------------------------------------------------- */
+/* SECCIONES GLASS */
+/* ---------------------------------------------------- */
+.section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    height: fit-content;
+}
+
+.section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+
+.section h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section h2 i {
+    color: var(--primary-light);
+    font-size: 1.2rem;
+}
+
+/* ---------------------------------------------------- */
+/* GRUPOS DE FORMULARIO */
+/* ---------------------------------------------------- */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
-label {
+.form-group label {
     display: block;
-    margin-bottom: 3px; /* Menos espacio, diseño más compacto */
-    font-weight: 500;
-    font-size: 0.9em;
-    color: var(--color-texto-secundario); /* Texto secundario para etiquetas */
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    letter-spacing: -0.01em;
 }
 
+/* ---------------------------------------------------- */
+/* CAMPOS DE FORMULARIO */
+/* ---------------------------------------------------- */
 input[type="email"],
 input[type="text"],
 input[type="datetime-local"],
+input[type="tel"],
 textarea,
-input[type="file"] {
+select {
     width: 100%;
-    padding: 10px 12px;
-    border: none; /* Quitamos el borde visible */
-    border-radius: 12px; /* Bordes redondeados modernos */
-    background: var(--color-fondo-base); /* Fondo que contrasta ligeramente */
-    box-sizing: border-box;
-    color: var(--color-texto);
-    font-size: 1em;
-    transition: all 0.2s ease;
-    resize: vertical;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-muted);
 }
 
 input:focus,
 textarea:focus,
-.input-icon-wrapper input:focus {
-    background: white;
-    box-shadow: 0 0 0 2px var(--color-principal); /* Borde de foco sutil y cálido */
+select:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     outline: none;
+    transform: translateY(-1px);
 }
 
-/* --- Estilo para el campo de email con icono --- */
+/* ---------------------------------------------------- */
+/* CAMPO EMAIL CON ICONO */
+/* ---------------------------------------------------- */
 .input-icon-wrapper {
     position: relative;
     display: flex;
@@ -95,103 +192,396 @@ textarea:focus,
 
 .input-icon {
     position: absolute;
-    left: 12px; /* Mover el icono para que esté dentro del input */
-    font-size: 1em;
-    color: var(--color-texto-secundario);
-    z-index: 1; /* Asegurar que esté por encima */
+    left: 16px;
+    font-size: 1rem;
+    color: var(--text-muted);
+    z-index: 1;
+    transition: color 0.3s ease;
 }
 
 .input-icon-wrapper input[type="email"] {
-    padding-left: 35px !important;
-    background: var(--color-fondo-base);
+    padding-left: 45px;
 }
 
-/* --- 4. ESTILOS DEL CATÁLOGO VISUAL --- */
+.input-icon-wrapper:focus-within .input-icon {
+    color: var(--primary-light);
+}
+
+/* ---------------------------------------------------- */
+/* CATÁLOGO DE SERVICIOS */
+/* ---------------------------------------------------- */
 .catalogo-grid {
-    display: flex; /* Usamos flex para una fila de desplazamiento horizontal */
-    overflow-x: scroll; /* Permitir scroll horizontal como en el ejemplo */
-    gap: 10px;
-    padding-bottom: 10px; /* Espacio para el scrollbar */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+}
+
+@media (min-width: 480px) {
+    .catalogo-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .catalogo-item {
-    min-width: 100px; /* Tamaño fijo para la tarjeta */
-    max-width: 100px;
-    height: auto;
-    flex-shrink: 0; /* Evita que los elementos se encojan */
-
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.4);
-    padding: 8px;
-    transition: all 0.2s ease;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
 
+.catalogo-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
 .catalogo-item:hover {
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--surface-hover);
+    border-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.catalogo-item:hover::before {
+    transform: scaleX(1);
 }
 
 .catalogo-item img {
-    width: 100%;
-    height: 100px; /* Altura fija para las imágenes */
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 5px;
-    border: 3px solid transparent;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    filter: brightness(0.9) saturate(0.8);
+}
+
+.catalogo-item:hover img {
+    filter: brightness(1) saturate(1.1);
+    transform: scale(1.05);
 }
 
 .catalogo-item span {
-    font-size: 0.75em;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--color-texto);
+    color: var(--text-primary);
+    display: block;
+    line-height: 1.3;
 }
 
-/* Ocultar el radio button nativo */
-.catalogo-item input[type="radio"] {
-    /* Mantenemos el display:none para el input */
+.catalogo-item input[type="checkbox"] {
     display: none;
 }
 
-/* Estilo visual para el elemento seleccionado */
-.catalogo-item input[type="radio"]:checked + img {
-    border-color: var(--color-principal);
-    box-shadow: 0 0 8px var(--color-principal); /* Sombra para resaltar */
+/* Estado seleccionado */
+.catalogo-item input[type="checkbox"]:checked + img {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    filter: brightness(1.1) saturate(1.2);
 }
 
+.catalogo-item input[type="checkbox"]:checked ~ span {
+    color: var(--primary-light);
+    font-weight: 700;
+}
 
-/* --- 5. BOTÓN DE ENVIAR (Estilo Pay Button) --- */
-button[type="submit"] {
-    width: 100%;
-    padding: 15px; /* Más grande como el botón "Pay" del ejemplo */
+/* ---------------------------------------------------- */
+/* UPLOAD DE ARCHIVOS */
+/* ---------------------------------------------------- */
+.file-upload-wrapper {
+    position: relative;
+}
+
+.file-upload-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.file-upload-hint i {
+    color: var(--primary-light);
+}
+
+.file-input {
+    padding: 12px 16px;
+}
+
+.file-input::file-selector-button {
+    background: var(--gradient-primary);
     border: none;
-    border-radius: 12px;
-    background-color: var(--color-principal);
+    border-radius: 8px;
     color: white;
-    font-size: 1.1em;
-    font-weight: bold;
+    padding: 8px 16px;
+    margin-right: 12px;
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    margin-top: 25px;
-    box-shadow: 0 6px 15px rgba(241, 122, 126, 0.4);
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
-button[type="submit"]:hover {
-    background-color: #E06A6D;
-    box-shadow: 0 4px 10px rgba(241, 122, 126, 0.6);
+.file-input::file-selector-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-/* --- 6. OTROS ELEMENTOS (Enlace Volver al Inicio) --- */
-.volver-inicio {
+/* ---------------------------------------------------- */
+/* BOTÓN PRINCIPAL */
+/* ---------------------------------------------------- */
+.form-actions {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 24px;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 40px;
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: 16px;
     color: white;
-    text-decoration: underline;
+    font-size: 1.1rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    min-width: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-primary:active {
+    transform: translateY(-1px);
+}
+
+/* ---------------------------------------------------- */
+/* ENLACE VOLVER */
+/* ---------------------------------------------------- */
+.volver-inicio {
     display: block;
     text-align: center;
-    margin-top: 20px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 32px;
+    padding: 14px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.03);
+    grid-column: 1 / -1;
 }
 
 .volver-inicio:hover {
-    color: #ffd8d8;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.volver-inicio i {
+    margin-right: 8px;
+}
+
+/* ---------------------------------------------------- */
+/* MENSAJES DE ERROR */
+/* ---------------------------------------------------- */
+.error-message {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fecaca;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    font-weight: 500;
+}
+
+/* ---------------------------------------------------- */
+/* ANIMACIONES SUAVES */
+/* ---------------------------------------------------- */
+.section {
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.section:nth-child(1) { animation-delay: 0.1s; }
+.section:nth-child(2) { animation-delay: 0.2s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.catalogo-item {
+    animation: slideIn 0.4s ease-out backwards;
+}
+
+.catalogo-item:nth-child(1) { animation-delay: 0.3s; }
+.catalogo-item:nth-child(2) { animation-delay: 0.4s; }
+.catalogo-item:nth-child(3) { animation-delay: 0.5s; }
+.catalogo-item:nth-child(4) { animation-delay: 0.6s; }
+.catalogo-item:nth-child(5) { animation-delay: 0.7s; }
+.catalogo-item:nth-child(6) { animation-delay: 0.8s; }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ---------------------------------------------------- */
+/* RESPONSIVE */
+/* ---------------------------------------------------- */
+@media (max-width: 1023px) {
+    .container {
+        max-width: 800px;
+    }
+
+    .section {
+        padding: 28px 24px;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+        margin-bottom: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 16px;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+
+    .section {
+        padding: 24px 20px;
+        border-radius: 18px;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 28px;
+    }
+
+    .section h2 {
+        font-size: 1.3rem;
+    }
+
+    .catalogo-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .catalogo-item {
+        padding: 14px 8px;
+    }
+
+    .catalogo-item img {
+        width: 45px;
+        height: 45px;
+    }
+
+    .catalogo-item span {
+        font-size: 0.75rem;
+    }
+
+    input, textarea, select, button {
+        padding: 12px 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .catalogo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .catalogo-item {
+        padding: 16px 12px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        min-width: auto;
+        padding: 16px 24px;
+    }
+
+    .two-column-layout {
+        gap: 24px;
+    }
+}
+
+/* ---------------------------------------------------- */
+/* SCROLLBAR PERSONALIZADO */
+/* ---------------------------------------------------- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
 }
