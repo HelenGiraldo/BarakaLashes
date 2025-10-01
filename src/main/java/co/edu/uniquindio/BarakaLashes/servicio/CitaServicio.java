@@ -15,9 +15,15 @@ public interface CitaServicio {
 
     List<CitaDTO> listarCitas();
 
+    List<CitaDTO> listarCitasPorUsuario(String emailUsuario);
+
     CitaDTO obtenerCitaPorId(Integer idCita);
 
+    CitaDTO obtenerCitaPorIdYUsuario(Integer idCita, String emailUsuario);
+
     CitaDTO crearCita(CitaDTO cita);
+
+    void cancelarCita(Integer idCita, String emailUsuario);
 
     CitaActualizadaDTO actualizarCita(Integer id, CitaDTO citaDTO);
 

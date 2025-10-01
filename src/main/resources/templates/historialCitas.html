@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Citas - BarakaLashes</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilos específicos para el historial */
+        .historial-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        /* Alertas */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Filtros */
+        .filtros-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filtro-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filtro-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .filtro-select {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background: white;
+        }
+
+        /* Grid de citas */
+        .citas-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .cita-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 5px solid #007bff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cita-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .cita-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .cita-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .cita-estado {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .estado-pendiente {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .estado-confirmada {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .estado-cancelada {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .estado-completada {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .cita-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+        }
+
+        .info-item i {
+            color: #007bff;
+            width: 16px;
+        }
+
+        .servicios-list {
+            margin: 15px 0;
+        }
+
+        .servicios-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .servicios-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .servicio-tag {
+            background: #e9ecef;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: #495057;
+        }
+
+        .cita-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancelar {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-cancelar:hover {
+            background-color: #c82333;
+        }
+
+        .btn-cancelar:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .btn-editar {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-editar:hover {
+            background-color: #218838;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #dc3545;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        /* Estado vacío */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #dee2e6;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .historial-container {
+                padding: 15px;
+            }
+
+            .cita-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .cita-actions {
+                width: 100%;
+            }
+
+            .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .filtros-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="historial-container">
+    <!-- Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-calendar-alt"></i> Mis Citas</h1>
+        <p>Gestiona y revisa todas tus citas programadas</p>
+    </div>
+
+    <!-- Alertas -->
+    <div th:if="${success}" class="alert alert-success">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${success}"></span>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-container">
+        <div class="filtro-group">
+            <span class="filtro-label">Filtrar por estado:</span>
+            <select class="filtro-select" id="filtroEstado">
+                <option value="todas">Todas las citas</option>
+                <option value="PENDIENTE">Pendientes</option>
+                <option value="CONFIRMADA">Confirmadas</option>
+                <option value="CANCELADA">Canceladas</option>
+                <option value="COMPLETADA">Completadas</option>
+            </select>
+        </div>
+
+        <a th:href="@{/citas/nueva}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nueva Cita
+        </a>
+    </div>
+
+    <!-- Lista de Citas -->
+    <div class="citas-grid" th:if="${not citas?.empty}">
+        <div th:each="cita : ${citas}" class="cita-card" th:data-estado="${cita.estadoCita}">
+            <div class="cita-header">
+                <h3 class="cita-title" th:text="${cita.nombreCita}">Cita</h3>
+                <span th:classappend="'cita-estado estado-' + ${cita.estadoCita?.toLowerCase()}"
+                      th:text="${cita.estadoCita}">ESTADO</span>
+            </div>
+
+            <div class="cita-info">
+                <div class="info-item">
+                    <i class="fas fa-calendar"></i>
+                    <span th:text="${#temporals.format(cita.fechaCita, 'dd/MM/yyyy HH:mm')}">Fecha</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-user-clock"></i>
+                    <span th:text="${cita.duracion} + ' min'">Duración</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span th:text="'$' + ${cita.precio}">Precio</span>
+                </div>
+            </div>
+
+            <div class="servicios-list" th:if="${cita.listaServicios}">
+                <div class="servicios-title">Servicios:</div>
+                <div class="servicios-tags">
+                        <span th:each="servicio : ${cita.listaServicios}"
+                              class="servicio-tag" th:text="${servicio}">Servicio</span>
+                </div>
+            </div>
+
+            <div class="cita-descripcion" th:if="${cita.descripcionCita}">
+                <strong>Notas:</strong>
+                <span th:text="${cita.descripcionCita}">Descripción</span>
+            </div>
+
+            <div class="cita-actions">
+                <button th:if="${cita.estadoCita == 'PENDIENTE' or cita.estadoCita == 'CONFIRMADA'}"
+                        class="btn btn-cancelar"
+                        th:onclick="'mostrarModalCancelacion(' + ${cita.idCita} + ')'">
+                    <i class="fas fa-times"></i> Cancelar Cita
+                </button>
+
+                <a th:href="@{/citas/{id}/editar(id=${cita.idCita})}"
+                   class="btn btn-editar"
+                   th:if="${cita.estadoCita == 'PENDIENTE'}">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div th:if="${citas?.empty}" class="empty-state">
+        <i class="fas fa-calendar-times"></i>
+        <h3>No tienes citas programadas</h3>
+        <p>¡Programa tu primera cita y vive la experiencia BarakaLashes!</p>
+        <a th:href="@{/citas/nueva}" class="btn btn-primary" style="margin-top: 20px;">
+            <i class="fas fa-plus"></i> Agendar Mi Primera Cita
+        </a>
+    </div>
+</div>
+
+<!-- Modal de Confirmación de Cancelación -->
+<div id="modalCancelacion" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="cerrarModal()">&times;</span>
+
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Confirmar Cancelación
+            </h3>
+        </div>
+
+        <div class="modal-body">
+            <p>¿Estás seguro de que deseas cancelar esta cita?</p>
+            <p><strong>Esta acción no se puede deshacer.</strong></p>
+            <p class="text-muted" style="font-size: 0.9rem; margin-top: 15px;">
+                <i class="fas fa-info-circle"></i>
+                Solo puedes cancelar citas con al menos 24 horas de anticipación.
+            </p>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="cerrarModal()">
+                <i class="fas fa-times"></i> Mantener Cita
+            </button>
+            <form id="formCancelarCita" method="post" th:action="@{/citas/{id}/cancelar(id=0)}">
+                <button type="submit" class="btn btn-cancelar">
+                    <i class="fas fa-check"></i> Sí, Cancelar Cita
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Variables globales
+    let citaIdActual = null;
+
+    // Mostrar modal de cancelación
+    function mostrarModalCancelacion(citaId) {
+        citaIdActual = citaId;
+        const modal = document.getElementById('modalCancelacion');
+        const form = document.getElementById('formCancelarCita');
+
+        // Actualizar la acción del formulario con el ID correcto
+        form.action = form.action.replace('/0/cancelar', `/${citaId}/cancelar`);
+        modal.style.display = 'block';
+    }
+
+    // Cerrar modal
+    function cerrarModal() {
+        const modal = document.getElementById('modalCancelacion');
+        modal.style.display = 'none';
+        citaIdActual = null;
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.onclick = function(event) {
+        const modal = document.getElementById('modalCancelacion');
+        if (event.target === modal) {
+            cerrarModal();
+        }
+    }
+
+    // Filtrar citas por estado
+    document.getElementById('filtroEstado').addEventListener('change', function() {
+        const estadoSeleccionado = this.value;
+        const citas = document.querySelectorAll('.cita-card');
+
+        citas.forEach(cita => {
+            const estadoCita = cita.getAttribute('data-estado');
+
+            if (estadoSeleccionado === 'todas' || estadoSeleccionado === estadoCita) {
+                cita.style.display = 'block';
+            } else {
+                cita.style.display = 'none';
+            }
+        });
+    });
+
+    // Tecla Escape para cerrar modal
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            cerrarModal();
+        }
+    });
+</script>
+</body>
+</html>
