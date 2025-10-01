@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Controller
@@ -35,7 +37,7 @@ public class UsuarioController {
             usuarioServicio.crearUsuario(usuario);
             return "redirect:/usuarios?exito";
         } catch (RuntimeException e) {
-            return "redirect:/usuarios/nuevo?error=" + e.getMessage();
+            return "redirect:/usuarios/nuevo?error=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
         }
     }
 
@@ -59,7 +61,7 @@ public class UsuarioController {
             usuarioServicio.actualizarUsuario(id, usuario);
             return "redirect:/usuarios?actualizado";
         } catch (RuntimeException e) {
-            return "redirect:/usuarios/" + id + "/editar?error=" + e.getMessage();
+            return "redirect:/usuarios/" + id + "/editar?error=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
         }
     }
 
@@ -69,7 +71,7 @@ public class UsuarioController {
             usuarioServicio.eliminarUsuario(id);
             return "redirect:/usuarios?eliminado";
         } catch (RuntimeException e) {
-            return "redirect:/usuarios?error=" + e.getMessage();
+            return "redirect:/usuarios?error=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
         }
     }
 
