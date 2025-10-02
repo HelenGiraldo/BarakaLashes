@@ -2,7 +2,7 @@ package co.edu.uniquindio.BarakaLashes.controlador;
 
 import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaActualizadaDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
-import co.edu.uniquindio.BarakaLashes.servicio.CitaServicio; // Usamos la interfaz
+import co.edu.uniquindio.BarakaLashes.servicio.CitaServicio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +17,8 @@ import java.util.List;
 @RequestMapping("/api/citas")
 public class CitaAPIController {
 
-    // Inyectamos la interfaz del servicio
     private final CitaServicio citaServicio;
 
-    // Crear cita
     @PostMapping
     public ResponseEntity<CitaDTO> crearCita(@RequestBody CitaDTO citaDTO) {
         // El servicio devuelve CitaDTO, no la entidad Cita
@@ -28,13 +26,11 @@ public class CitaAPIController {
         return ResponseEntity.ok(nuevaCita);
     }
 
-    // Listar todas las citas
     @GetMapping
     public ResponseEntity<List<CitaDTO>> listarCitas() {
         return ResponseEntity.ok(citaServicio.listarCitas());
     }
 
-    // Obtener cita por id
     @GetMapping("/{id}")
     public ResponseEntity<CitaDTO> obtenerCitaPorId(@PathVariable Integer id) {
         try {
@@ -44,11 +40,11 @@ public class CitaAPIController {
         }
     }
 
-    // Actualizar cita: AHORA RECIBE CitaDTO
+
     @PutMapping("/{id}")
     public ResponseEntity<CitaActualizadaDTO> actualizarCita(@PathVariable Integer id, @RequestBody CitaDTO citaDTO) {
         try {
-            // Pasamos el DTO al servicio
+
             return ResponseEntity.ok(citaServicio.actualizarCita(id, citaDTO));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

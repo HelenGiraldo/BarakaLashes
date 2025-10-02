@@ -102,7 +102,7 @@
 
         .cita-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 15px;
             flex-wrap: wrap;
@@ -386,7 +386,7 @@
     </div>
 
     <!-- Lista de Citas -->
-    <div class="citas-grid" th:if="${not citas?.empty}">
+    <div class="citas-grid" th:if="${not citas?.isEmpty()}">
         <div th:each="cita : ${citas}" class="cita-card" th:data-estado="${cita.estadoCita}">
             <div class="cita-header">
                 <h3 class="cita-title" th:text="${cita.nombreCita}">Cita</h3>
@@ -439,7 +439,7 @@
     </div>
 
     <!-- Estado vacío -->
-    <div th:if="${citas?.empty}" class="empty-state">
+    <div th:if="${citas?.isEmpty()}" class="empty-state">
         <i class="fas fa-calendar-times"></i>
         <h3>No tienes citas programadas</h3>
         <p>¡Programa tu primera cita y vive la experiencia BarakaLashes!</p>

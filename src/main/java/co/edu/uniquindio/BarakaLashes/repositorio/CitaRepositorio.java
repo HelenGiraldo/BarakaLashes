@@ -11,10 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Repositorio de Citas: Interfaz para interactuar con la base de datos.
- * Extiende JpaRepository para obtener operaciones CRUD básicas.
- */
 @Repository
 public interface CitaRepositorio extends JpaRepository<Cita, Integer> {
 
@@ -23,6 +19,9 @@ public interface CitaRepositorio extends JpaRepository<Cita, Integer> {
 
     // Buscar cita por ID y email de usuario (para seguridad)
     Optional<Cita> findByIdCitaAndUsuarioEmail(Integer idCita, String emailUsuario);
+
+    // Buscar citas por estado
+    List<Cita> findByEstadoCita(EstadoCita estadoCita);
 
     // Actualizar estado de una cita
     @Modifying

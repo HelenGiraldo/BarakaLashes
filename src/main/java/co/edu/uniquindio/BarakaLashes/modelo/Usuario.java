@@ -7,8 +7,6 @@ import java.util.List;
 @Entity
 @Table(name = "Usuario")
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "listaCitas")
@@ -33,9 +31,15 @@ public class Usuario {
     @Column(nullable = false, length = 15)
     private String telefono;
 
+    @Column(nullable = false, length = 255)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private RolUsuario rol = RolUsuario.USUARIO;
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cita> listaCitas;
-
 
     @ManyToOne
     @JoinColumn(name = "negocio_id")
