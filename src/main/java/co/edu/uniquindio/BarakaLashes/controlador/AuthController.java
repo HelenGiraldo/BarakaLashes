@@ -1,12 +1,12 @@
 package co.edu.uniquindio.BarakaLashes.controlador;
 
-import co.edu.uniquindio.BarakaLashes.DTO.LoginDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.RegistroDTO;
-import co.edu.uniquindio.BarakaLashes.modelo.Usuario;
 import co.edu.uniquindio.BarakaLashes.servicio.AuthServicio;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,44 +24,19 @@ public class AuthController {
      * Mostrar formulario de login
      */
     @GetMapping("/login")
-    public String mostrarLogin(Model model) {
-        model.addAttribute("loginDTO", new LoginDTO());
-        return "login";
-    }
+    public String mostrarLogin(
+            @RequestParam(value = "error", required = false) String error,
+            @RequestParam(value = "logout", required = false) String logout,
+            Model model) {
 
-    /**
-     * Procesar login
-     */
-    @PostMapping("/login")
-    public String procesarLogin(@ModelAttribute LoginDTO loginDTO,
-                                HttpSession session,
-                                RedirectAttributes redirectAttributes) {
-        try {
-            Usuario usuario = authServicio.login(loginDTO);
-
-            // Guardar usuario en sesión
-            session.setAttribute("usuario", usuario);
-            session.setAttribute("email", usuario.getEmail());
-            session.setAttribute("rol", usuario.getRol());
-
-            log.info("Usuario {} autenticado exitosamente. Rol: {}",
-                    usuario.getEmail(), usuario.getRol());
-
-            redirectAttributes.addFlashAttribute("success",
-                    "¡Bienvenido " + usuario.getNombre() + "!");
-
-            // Redirigir según el rol
-            if (usuario.getRol() == co.edu.uniquindio.BarakaLashes.modelo.RolUsuario.ADMIN) {
-                return "redirect:/admin/dashboard";
-            } else {
-                return "redirect:/citas/mis-citas";
-            }
-
-        } catch (Exception e) {
-            log.error("Error en login: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/auth/login";
+        if (error != null) {
+            model.addAttribute("error", "Email o contraseña incorrectos");
         }
+        if (logout != null) {
+            model.addAttribute("success", "Sesión cerrada exitosamente");
+        }
+
+        return "login";
     }
 
     /**
@@ -78,21 +53,20 @@ public class AuthController {
      */
     @PostMapping("/registro")
     public String procesarRegistro(@ModelAttribute RegistroDTO registroDTO,
-                                   HttpSession session,
                                    RedirectAttributes redirectAttributes) {
+        log.info("=== RECIBIENDO DATOS DEL FORMULARIO ===");
+        log.info("Nombre: {}", registroDTO.getNombre());
+        log.info("Apellido: {}", registroDTO.getApellido());
+        log.info("Cédula: {}", registroDTO.getCedula());
+        log.info("Email: {}", registroDTO.getEmail());
+        log.info("Teléfono: {}", registroDTO.getTelefono());
+        log.info("Password: {}", registroDTO.getPassword() != null ? "***" : "NULL");
+        log.info("ConfirmarPassword: {}", registroDTO.getConfirmarPassword() != null ? "***" : "NULL");
+
         try {
-            Usuario usuario = authServicio.registrar(registroDTO);
-
-            // Auto-login después del registro
-            session.setAttribute("usuario", usuario);
-            session.setAttribute("email", usuario.getEmail());
-            session.setAttribute("rol", usuario.getRol());
-
-            redirectAttributes.addFlashAttribute("success",
-                    "¡Registro exitoso! Bienvenido " + usuario.getNombre());
-
-            return "redirect:/citas/mis-citas";
-
+            authServicio.registrar(registroDTO);
+            redirectAttributes.addFlashAttribute("success", "¡Registro exitoso! Ahora puedes iniciar sesión");
+            return "redirect:/auth/login";
         } catch (Exception e) {
             log.error("Error en registro: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -102,15 +76,25 @@ public class AuthController {
     }
 
     /**
-     * Cerrar sesión
+     * Página principal después del login
      */
-    @GetMapping("/logout")
-    public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
-        String email = (String) session.getAttribute("email");
-        session.invalidate();
+    @GetMapping("/success")
+    public String loginSuccessRedirect() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        log.info("Usuario {} cerró sesión", email);
-        redirectAttributes.addFlashAttribute("success", "Sesión cerrada exitosamente");
+        if (auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+            return "redirect:/admin/dashboard";
+        } else {
+            return "redirect:/citas/mis-citas";
+        }
+    }
+
+    /**
+     * Página de inicio
+     */
+    @GetMapping("/")
+    public String home() {
         return "redirect:/auth/login";
     }
 }

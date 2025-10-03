@@ -3,6 +3,7 @@ package co.edu.uniquindio.BarakaLashes.servicio;
 import co.edu.uniquindio.BarakaLashes.modelo.Usuario;
 import co.edu.uniquindio.BarakaLashes.repositorio.UsuarioRepositorio;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -12,15 +13,18 @@ import java.util.Optional;
 public class UsuarioServicio {
 
     private final UsuarioRepositorio usuarioRepositorio;
+    private final PasswordEncoder passwordEncoder;
 
     public Usuario crearUsuario(Usuario usuario) {
-        // Validar que el email y cédula no existan
+
         if (usuarioRepositorio.existsByEmail(usuario.getEmail())) {
             throw new RuntimeException("Ya existe un usuario con este email: " + usuario.getEmail());
         }
         if (usuarioRepositorio.existsByCedula(usuario.getCedula())) {
             throw new RuntimeException("Ya existe un usuario con esta cédula: " + usuario.getCedula());
         }
+
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepositorio.save(usuario);
     }
 

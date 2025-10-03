@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("barakaLashes-app")
-@CrossOrigin(value = "http://localhost:3000")
+@CrossOrigin(value = "http://localhost:8080")
 public class EmpleadoControlador {
 
     private static final Logger logger =
@@ -23,8 +23,7 @@ public class EmpleadoControlador {
     private EmpleadoServicio empleadoServicio;
     @Autowired
     private EmpleadoRepositorio empleadoRepositorio;
-
-    // http://localhost:8080/barakaLashes-app/empleados
+    
     @GetMapping ("/empleados")
     public List<Empleado> obtenerEmpleados(){
         var empleados = empleadoServicio.listarEmpleados();
