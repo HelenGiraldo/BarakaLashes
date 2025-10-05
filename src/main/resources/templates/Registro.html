@@ -205,18 +205,6 @@
         <span th:text="${error}"></span>
     </div>
 
-    <!-- Información para crear cuenta de ADMIN -->
-    <div class="admin-info" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 15px; margin-bottom: 20px; font-size: 0.8rem; color: #856404;">
-        <h4 style="margin-bottom: 8px; font-size: 0.9rem;">
-            <i class="fas fa-crown"></i> ¿Quieres ser Administrador?
-        </h4>
-        <p>Usa la cédula: <strong>1000000000</strong> para crear una cuenta de administrador</p>
-        <p style="margin-top: 5px; font-size: 0.75rem;">
-            <i class="fas fa-info-circle"></i> Solo durante el registro inicial
-        </p>
-    </div>
-
-    <!-- Formulario simplificado sin th:field -->
     <form action="/auth/registro" method="post">
         <div class="form-grid">
             <!-- Nombre -->
@@ -303,24 +291,8 @@
         <p>¿Ya tienes cuenta? <a href="/auth/login">Inicia sesión aquí</a></p>
     </div>
 </div>
-
-<script>
-    // Validación de contraseñas en tiempo real
-    document.addEventListener('DOMContentLoaded', function() {
-        const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirmarPassword');
-
-        function validatePasswords() {
-            if (password.value !== confirmPassword.value) {
-                confirmPassword.style.borderColor = '#dc3545';
-            } else {
-                confirmPassword.style.borderColor = '#28a745';
-            }
-        }
-
-        password.addEventListener('input', validatePasswords);
-        confirmPassword.addEventListener('input', validatePasswords);
-    });
-</script>
 </body>
 </html>
+
+
+

@@ -10,4 +10,5 @@ public interface AuthServicio {
     boolean validarCredenciales(String email, String password);
     boolean existeUsuario(String email);
     boolean existeCedula(String cedula);
+    Usuario obtenerUsuarioPorEmail(String email);
 }

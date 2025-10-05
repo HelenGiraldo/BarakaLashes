@@ -64,7 +64,7 @@
                         <div class="catalogo-grid">
                             <!-- Servicio CLASICAS -->
                             <label class="catalogo-item">
-                                <input type="checkbox" name="serviciosSeleccionados" value="CLASICAS">
+                                <input type="checkbox" th:field="*{serviciosSeleccionados}" value="CLASICA">
                                 <img th:src="@{/images/clasicas.jpg}" alt="Pestañas Clásicas"
                                      onerror="this.src='https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=150&h=150&fit=crop&crop=center'">
                                 <span>Pestañas Clásicas</span>
@@ -72,23 +72,15 @@
 
                             <!-- Servicio VOLUMEN -->
                             <label class="catalogo-item">
-                                <input type="checkbox" name="serviciosSeleccionados" value="VOLUMEN">
+                                <input type="checkbox" th:field="*{serviciosSeleccionados}" value="VOLUMEN">
                                 <img th:src="@{/images/volumen.jpg}" alt="Pestañas Volumen"
                                      onerror="this.src='https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=150&h=150&fit=crop&crop=center'">
                                 <span>Pestañas Volumen</span>
                             </label>
 
-                            <!-- Servicio LIFTING -->
-                            <label class="catalogo-item">
-                                <input type="checkbox" name="serviciosSeleccionados" value="LIFTING">
-                                <img th:src="@{/images/lifting.jpg}" alt="Lifting de Pestañas"
-                                     onerror="this.src='https://images.unsplash.com/photo-1596079890744-c1a0462d0975?w=150&h=150&fit=crop&crop=center'">
-                                <span>Lifting de Pestañas</span>
-                            </label>
-
                             <!-- Servicio CEJAS -->
                             <label class="catalogo-item">
-                                <input type="checkbox" name="serviciosSeleccionados" value="CEJAS">
+                                <input type="checkbox" th:field="*{serviciosSeleccionados}" value="CEJAS">
                                 <img th:src="@{/images/cejas.jpg}" alt="Diseño de Cejas"
                                      onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center'">
                                 <span>Diseño de Cejas</span>
@@ -96,7 +88,7 @@
 
                             <!-- Servicio TINTE -->
                             <label class="catalogo-item">
-                                <input type="checkbox" name="serviciosSeleccionados" value="TINTE">
+                                <input type="checkbox" th:field="*{serviciosSeleccionados}" value="TINTE">
                                 <img th:src="@{/images/tinte.jpg}" alt="Tinte de Pestañas"
                                      onerror="this.src='https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=150&h=150&fit=crop&crop=center'">
                                 <span>Tinte de Pestañas</span>
@@ -104,25 +96,15 @@
 
                             <!-- Servicio PERMANENTE -->
                             <label class="catalogo-item">
-                                <input type="checkbox" name="serviciosSeleccionados" value="PERMANENTE">
+                                <input type="checkbox" th:field="*{serviciosSeleccionados}" value="PERMANENTE">
                                 <img th:src="@{/images/permanente.jpg}" alt="Rizado Permanente"
                                      onerror="this.src='https://images.unsplash.com/photo-1595476108010-b4d1f102b1e1?w=150&h=150&fit=crop&crop=center'">
                                 <span>Rizado Permanente</span>
                             </label>
+
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="imagenReferencia">Imagen de Referencia (Opcional):</label>
-                        <div class="file-upload-wrapper">
-                            <input type="file" id="imagenReferencia" th:field="*{imagenReferencia}"
-                                   accept="image/*" class="form-control file-input">
-                            <div class="file-upload-hint">
-                                <i class="fas fa-info-circle"></i>
-                                Puedes subir una foto de referencia para tu estilo deseado
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

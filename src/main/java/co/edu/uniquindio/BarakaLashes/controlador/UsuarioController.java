@@ -1,7 +1,8 @@
 package co.edu.uniquindio.BarakaLashes.controlador;
 
+import co.edu.uniquindio.BarakaLashes.DTO.RegistroDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.Usuario;
-import co.edu.uniquindio.BarakaLashes.servicio.UsuarioServicio;
+import co.edu.uniquindio.BarakaLashes.servicio.Implementaciones.UsuarioServicioImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UsuarioController {
 
-    private final UsuarioServicio usuarioServicio;
+    private final UsuarioServicioImpl usuarioServicio;
 
     @GetMapping
     public String listarUsuarios(Model model) {
@@ -32,9 +33,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/nuevo")
-    public String crearUsuario(@ModelAttribute Usuario usuario) {
+    public String crearUsuario(@ModelAttribute RegistroDTO usuario) {
         try {
-            usuarioServicio.crearUsuario(usuario);
+            usuarioServicio.registrar(usuario);
             return "redirect:/usuarios?exito";
         } catch (RuntimeException e) {
             return "redirect:/usuarios/nuevo?error=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);

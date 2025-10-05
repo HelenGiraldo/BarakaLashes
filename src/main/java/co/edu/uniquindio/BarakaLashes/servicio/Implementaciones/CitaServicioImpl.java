@@ -2,9 +2,11 @@ package co.edu.uniquindio.BarakaLashes.servicio.Implementaciones;
 
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.Cita;
+import co.edu.uniquindio.BarakaLashes.modelo.Empleado;
 import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
 import co.edu.uniquindio.BarakaLashes.repositorio.CitaRepositorio;
 import co.edu.uniquindio.BarakaLashes.mappers.CitaMapper;
+import lombok.extern.slf4j.Slf4j;
 
 import co.edu.uniquindio.BarakaLashes.servicio.CitaServicio;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -24,26 +27,51 @@ public class CitaServicioImpl implements CitaServicio {
 
     @Override
     public int crearCita(CitaDTO citaDTO) throws Exception {
-        // Validar datos básicos
-        if (citaDTO.getNombreCita() == null || citaDTO.getNombreCita().trim().isEmpty()) {
-            throw new Exception("El nombre de la cita es obligatorio");
-        }
+        log.info("=== INTENTANDO CREAR CITA ===");
+        log.info("Email cliente: {}", citaDTO.getEmailCliente());
+        log.info("Nombre cita: {}", citaDTO.getNombreCita());
+        log.info("Fecha cita: {}", citaDTO.getFechaCita());
+        log.info("Servicios seleccionados: {}", citaDTO.getServiciosSeleccionados());
 
-        if (citaDTO.getFechaCita() == null) {
-            throw new Exception("La fecha de la cita es obligatoria");
-        }
+        try {
+            // Validar datos básicos
+            if (citaDTO.getEmailCliente() == null || citaDTO.getEmailCliente().trim().isEmpty()) {
+                throw new Exception("El email del cliente es obligatorio");
+            }
 
-        // Convertir DTO a entidad
-        Cita cita = citaMapper.citaDTOToCita(citaDTO);
+            if (citaDTO.getNombreCita() == null || citaDTO.getNombreCita().trim().isEmpty()) {
+                throw new Exception("El motivo de la cita es obligatorio");
+            }
 
-        // Asignar estado por defecto si no viene
-        if (cita.getEstadoCita() == null) {
+            if (citaDTO.getFechaCita() == null) {
+                throw new Exception("La fecha de la cita es obligatoria");
+            }
+
+            if (citaDTO.getServiciosSeleccionados() == null || citaDTO.getServiciosSeleccionados().isEmpty()) {
+                throw new Exception("Debe seleccionar al menos un servicio");
+            }
+
+
+            Cita cita = citaMapper.citaDTOToCita(citaDTO);
+            log.info("Cita mapeada: {}", cita);
+
+
             cita.setEstadoCita(EstadoCita.PENDIENTE);
-        }
+            Empleado empleado = new Empleado(12,"pacho","perez","@pene","1234","123456",23.1);
+            cita.setEmpleado(empleado);
 
-        // Guardar la cita
-        Cita citaGuardada = citaRepo.save(cita);
-        return citaGuardada.getIdCita();
+
+            log.info("Guardando cita en la base de datos...");
+            Cita citaGuardada = citaRepo.save(cita);
+            log.info("CITA CREADA EXITOSAMENTE - ID: {}", citaGuardada.getIdCita());
+
+            return citaGuardada.getIdCita();
+
+        } catch (Exception e) {
+            log.error(" ERROR AL CREAR CITA: {}", e.getMessage());
+            log.error("Stack trace:", e);
+            throw e;
+        }
     }
 
     @Override
@@ -56,21 +84,20 @@ public class CitaServicioImpl implements CitaServicio {
 
         Cita cita = citaOptional.get();
 
-        // Actualizar campos
         cita.setNombreCita(citaDTO.getNombreCita());
         cita.setDescripcionCita(citaDTO.getDescripcionCita());
         cita.setFechaCita(citaDTO.getFechaCita());
         cita.setEstadoCita(citaDTO.getEstadoCita());
-        cita.setListaServicios(citaDTO.getListaServicios());
+        cita.setListaServicios(citaDTO.getServiciosSeleccionados());
 
-        // Guardar cambios
+
         citaRepo.save(cita);
         return cita.getIdCita();
     }
 
     @Override
     public int eliminarCita(int idCita) throws Exception {
-        // Verificar que la cita existe
+
         if (!citaRepo.existsById(idCita)) {
             throw new Exception("Cita a eliminar no encontrada.");
         }

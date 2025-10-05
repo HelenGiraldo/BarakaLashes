@@ -31,7 +31,8 @@ public class CitaController {
         try {
             int idCita = citaServicio.crearCita(citaDTO);
             redirectAttributes.addFlashAttribute("mensaje", "Cita creada exitosamente con ID: " + idCita);
-            return "redirect:/";
+
+            return "redirect:/citas/nueva?exito";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al crear la cita: " + e.getMessage());
             return "redirect:/citas/nueva?error";
@@ -126,3 +127,4 @@ public class CitaController {
         }
     }
 }
+

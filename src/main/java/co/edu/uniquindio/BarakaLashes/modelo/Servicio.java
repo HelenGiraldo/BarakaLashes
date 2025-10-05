@@ -1,8 +1,9 @@
 package co.edu.uniquindio.BarakaLashes.modelo;
 
 public enum Servicio {
-    MANICURA,
-    PESTANAS,
+    CLASICA,
+    VOLUMEN,
     CEJAS,
-    PEDICURA
+    TINTE,
+    PERMANENTE
 }

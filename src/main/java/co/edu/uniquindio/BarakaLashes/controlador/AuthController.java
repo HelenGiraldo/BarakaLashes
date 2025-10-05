@@ -4,9 +4,6 @@ import co.edu.uniquindio.BarakaLashes.DTO.RegistroDTO;
 import co.edu.uniquindio.BarakaLashes.servicio.AuthServicio;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,21 +18,10 @@ public class AuthController {
     private final AuthServicio authServicio;
 
     /**
-     * Mostrar formulario de login
+     * Mostrar formulario de login (simple)
      */
     @GetMapping("/login")
-    public String mostrarLogin(
-            @RequestParam(value = "error", required = false) String error,
-            @RequestParam(value = "logout", required = false) String logout,
-            Model model) {
-
-        if (error != null) {
-            model.addAttribute("error", "Email o contraseña incorrectos");
-        }
-        if (logout != null) {
-            model.addAttribute("success", "Sesión cerrada exitosamente");
-        }
-
+    public String mostrarLogin(Model model) {
         return "login";
     }
 
@@ -54,21 +40,17 @@ public class AuthController {
     @PostMapping("/registro")
     public String procesarRegistro(@ModelAttribute RegistroDTO registroDTO,
                                    RedirectAttributes redirectAttributes) {
-        log.info("=== RECIBIENDO DATOS DEL FORMULARIO ===");
-        log.info("Nombre: {}", registroDTO.getNombre());
-        log.info("Apellido: {}", registroDTO.getApellido());
-        log.info("Cédula: {}", registroDTO.getCedula());
+        log.info("=== INTENTANDO REGISTRAR USUARIO ===");
         log.info("Email: {}", registroDTO.getEmail());
-        log.info("Teléfono: {}", registroDTO.getTelefono());
-        log.info("Password: {}", registroDTO.getPassword() != null ? "***" : "NULL");
-        log.info("ConfirmarPassword: {}", registroDTO.getConfirmarPassword() != null ? "***" : "NULL");
+        log.info("Nombre: {}", registroDTO.getNombre());
 
         try {
             authServicio.registrar(registroDTO);
+            log.info(" REGISTRO EXITOSO");
             redirectAttributes.addFlashAttribute("success", "¡Registro exitoso! Ahora puedes iniciar sesión");
             return "redirect:/auth/login";
         } catch (Exception e) {
-            log.error("Error en registro: {}", e.getMessage());
+            log.error(" ERROR EN REGISTRO: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             redirectAttributes.addFlashAttribute("registroDTO", registroDTO);
             return "redirect:/auth/registro";
@@ -76,25 +58,34 @@ public class AuthController {
     }
 
     /**
-     * Página principal después del login
-     */
-    @GetMapping("/success")
-    public String loginSuccessRedirect() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
-            return "redirect:/admin/dashboard";
-        } else {
-            return "redirect:/citas/mis-citas";
-        }
-    }
-
-    /**
-     * Página de inicio
+     * Página de inicio simple
      */
     @GetMapping("/")
     public String home() {
         return "redirect:/auth/login";
+    }
+
+    /**
+     * Procesar login simple
+     */
+    @PostMapping("/login")
+    public String procesarLogin(@RequestParam String email,
+                                @RequestParam String password,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            boolean valido = authServicio.validarCredenciales(email, password);
+
+            if (valido) {
+                redirectAttributes.addFlashAttribute("success", "Login exitoso");
+                return "redirect:/citas/nueva";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Credenciales incorrectas");
+                return "redirect:/auth/login";
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Credenciales incorrectas");
+            return "redirect:/auth/login";
+
+        }
     }
 }
