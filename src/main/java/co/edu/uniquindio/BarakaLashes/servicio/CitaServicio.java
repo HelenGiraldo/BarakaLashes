@@ -10,5 +10,10 @@ public interface CitaServicio {
     CitaDTO obtenerCita(int idCita) throws Exception;
     List<CitaDTO> listarCitas();
     List<CitaDTO> listarCitasPorUsuario(int idUsuario);
-    List<CitaDTO> listarCitasPorEmpleado(int idEmpleado);
+
+    // Nuevo: listar por email para historial del usuario
+    List<CitaDTO> listarCitasPorEmail(String emailUsuario);
+
+    // Nuevo: cancelar cita (cambia estado a CANCELADA si aplica)
+    int cancelarCita(int idCita) throws Exception;
 }

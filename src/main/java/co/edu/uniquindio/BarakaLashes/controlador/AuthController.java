@@ -71,11 +71,14 @@ public class AuthController {
     @PostMapping("/login")
     public String procesarLogin(@RequestParam String email,
                                 @RequestParam String password,
+                                jakarta.servlet.http.HttpSession session,
                                 RedirectAttributes redirectAttributes) {
         try {
             boolean valido = authServicio.validarCredenciales(email, password);
 
             if (valido) {
+                // Guardar email en sesión para identificar al usuario en el historial
+                session.setAttribute("email", email);
                 redirectAttributes.addFlashAttribute("success", "Login exitoso");
                 return "redirect:/citas/nueva";
             } else {

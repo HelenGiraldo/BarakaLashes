@@ -4,7 +4,9 @@ import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.Cita;
 import co.edu.uniquindio.BarakaLashes.modelo.Empleado;
 import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
+import co.edu.uniquindio.BarakaLashes.modelo.Usuario;
 import co.edu.uniquindio.BarakaLashes.repositorio.CitaRepositorio;
+import co.edu.uniquindio.BarakaLashes.repositorio.UsuarioRepositorio;
 import co.edu.uniquindio.BarakaLashes.mappers.CitaMapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +26,7 @@ public class CitaServicioImpl implements CitaServicio {
 
     private final CitaRepositorio citaRepo;
     private final CitaMapper citaMapper;
+    private final UsuarioRepositorio usuarioRepositorio;
 
     @Override
     public int crearCita(CitaDTO citaDTO) throws Exception {
@@ -55,10 +58,13 @@ public class CitaServicioImpl implements CitaServicio {
             Cita cita = citaMapper.citaDTOToCita(citaDTO);
             log.info("Cita mapeada: {}", cita);
 
+            // Asociar el usuario a partir del email del cliente
+            Usuario usuario = usuarioRepositorio.findByEmail(citaDTO.getEmailCliente())
+                    .orElseThrow(() -> new Exception("No existe un usuario registrado con el email proporcionado"));
+            cita.setUsuario(usuario);
 
+            // Estado inicial por defecto
             cita.setEstadoCita(EstadoCita.PENDIENTE);
-            Empleado empleado = new Empleado(12,"pacho","perez","@pene","1234","123456",23.1);
-            cita.setEmpleado(empleado);
 
 
             log.info("Guardando cita en la base de datos...");
@@ -124,19 +130,28 @@ public class CitaServicioImpl implements CitaServicio {
 
     @Override
     public List<CitaDTO> listarCitasPorUsuario(int idUsuario) {
-        List<Cita> todasLasCitas = citaRepo.findAll();
-        List<Cita> citasFiltradas = todasLasCitas.stream()
-                .filter(cita -> cita.getUsuario() != null && cita.getUsuario().getIdUsuario().equals(idUsuario))
-                .toList();
-        return citaMapper.citasToCitasDTO(citasFiltradas);
+        // Busca directamente en la BD por el ID del usuario
+        List<Cita> citas = citaRepo.findByUsuarioIdUsuario(idUsuario);
+        return citaMapper.citasToCitasDTO(citas);
     }
 
     @Override
-    public List<CitaDTO> listarCitasPorEmpleado(int idEmpleado) {
-        List<Cita> todasLasCitas = citaRepo.findAll();
-        List<Cita> citasFiltradas = todasLasCitas.stream()
-                .filter(cita -> cita.getEmpleado() != null && cita.getEmpleado().getIdEmpleado().equals(idEmpleado))
-                .toList();
-        return citaMapper.citasToCitasDTO(citasFiltradas);
+    public List<CitaDTO> listarCitasPorEmail(String emailUsuario) {
+        List<Cita> citas = citaRepo.findByUsuarioEmail(emailUsuario);
+        return citaMapper.citasToCitasDTO(citas);
+    }
+
+    @Override
+    public int cancelarCita(int idCita) throws Exception {
+        Cita cita = citaRepo.findCancelableCita(idCita)
+                .orElseThrow(() -> new Exception("La cita no existe o no se puede cancelar en su estado actual"));
+
+        // Regla: solo cancelar con 24h de anticipación
+        if (!java.time.LocalDateTime.now().isBefore(cita.getFechaCita().minusHours(24))) {
+            throw new Exception("Solo puedes cancelar con 24 horas de anticipación");
+        }
+
+        citaRepo.actualizarEstadoCita(idCita, EstadoCita.CANCELADA);
+        return idCita;
     }
 }

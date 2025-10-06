@@ -350,13 +350,11 @@
 </head>
 <body>
 <div class="historial-container">
-    <!-- Header -->
     <div class="page-header">
         <h1><i class="fas fa-calendar-alt"></i> Mis Citas</h1>
         <p>Gestiona y revisa todas tus citas programadas</p>
     </div>
 
-    <!-- Alertas -->
     <div th:if="${success}" class="alert alert-success">
         <i class="fas fa-check-circle"></i>
         <span th:text="${success}"></span>
@@ -367,7 +365,6 @@
         <span th:text="${error}"></span>
     </div>
 
-    <!-- Filtros -->
     <div class="filtros-container">
         <div class="filtro-group">
             <span class="filtro-label">Filtrar por estado:</span>
@@ -385,12 +382,11 @@
         </a>
     </div>
 
-    <!-- Lista de Citas -->
     <div class="citas-grid" th:if="${not citas?.isEmpty()}">
-        <div th:each="cita : ${citas}" class="cita-card" th:data-estado="${cita.estadoCita}">
+        <div th:each="cita : ${citas}" class="cita-card" th:data-estado="${cita.estadoCita}" th:data-fecha="${#temporals.format(cita.fechaCita, 'yyyy-MM-dd''T''HH:mm')}">
             <div class="cita-header">
                 <h3 class="cita-title" th:text="${cita.nombreCita}">Cita</h3>
-                <span th:classappend="'cita-estado estado-' + ${cita.estadoCita?.toLowerCase()}"
+                <span th:classappend="'cita-estado estado-' + ${cita.estadoCita?.name()?.toLowerCase()}"
                       th:text="${cita.estadoCita}">ESTADO</span>
             </div>
 
@@ -409,10 +405,10 @@
                 </div>
             </div>
 
-            <div class="servicios-list" th:if="${cita.listaServicios}">
+            <div class="servicios-list" th:if="${cita.serviciosSeleccionados}">
                 <div class="servicios-title">Servicios:</div>
                 <div class="servicios-tags">
-                        <span th:each="servicio : ${cita.listaServicios}"
+                        <span th:each="servicio : ${cita.serviciosSeleccionados}"
                               class="servicio-tag" th:text="${servicio}">Servicio</span>
                 </div>
             </div>
@@ -423,7 +419,7 @@
             </div>
 
             <div class="cita-actions">
-                <button th:if="${cita.estadoCita == 'PENDIENTE' or cita.estadoCita == 'CONFIRMADA'}"
+                <button th:if="${cita.estadoCita?.name() == 'PENDIENTE' or cita.estadoCita?.name() == 'CONFIRMADA'}"
                         class="btn btn-cancelar"
                         th:onclick="'mostrarModalCancelacion(' + ${cita.idCita} + ')'">
                     <i class="fas fa-times"></i> Cancelar Cita
@@ -431,14 +427,13 @@
 
                 <a th:href="@{/citas/{id}/editar(id=${cita.idCita})}"
                    class="btn btn-editar"
-                   th:if="${cita.estadoCita == 'PENDIENTE'}">
+                   th:if="${cita.estadoCita?.name() == 'PENDIENTE'}">
                     <i class="fas fa-edit"></i> Editar
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Estado vacío -->
     <div th:if="${citas?.isEmpty()}" class="empty-state">
         <i class="fas fa-calendar-times"></i>
         <h3>No tienes citas programadas</h3>
@@ -449,7 +444,6 @@
     </div>
 </div>
 
-<!-- Modal de Confirmación de Cancelación -->
 <div id="modalCancelacion" class="modal">
     <div class="modal-content">
         <span class="close" onclick="cerrarModal()">&times;</span>
@@ -471,10 +465,7 @@
         </div>
 
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="cerrarModal()">
-                <i class="fas fa-times"></i> Mantener Cita
-            </button>
-            <form id="formCancelarCita" method="post" th:action="@{/citas/{id}/cancelar(id=0)}">
+            <form id="formCancelarCita" method="post" th:action="@{/citas/0/cancelar}">
                 <button type="submit" class="btn btn-cancelar">
                     <i class="fas fa-check"></i> Sí, Cancelar Cita
                 </button>
@@ -489,12 +480,14 @@
 
     // Mostrar modal de cancelación
     function mostrarModalCancelacion(citaId) {
-        citaIdActual = citaId;
+
+        const actionUrl = '/citas/' + citaId + '/cancelar';
+
         const modal = document.getElementById('modalCancelacion');
         const form = document.getElementById('formCancelarCita');
 
-        // Actualizar la acción del formulario con el ID correcto
-        form.action = form.action.replace('/0/cancelar', `/${citaId}/cancelar`);
+        // 2. Establecer la URL de acción completa en el formulario
+        form.setAttribute('action', actionUrl);
         modal.style.display = 'block';
     }
 

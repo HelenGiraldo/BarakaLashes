@@ -25,12 +25,13 @@ public interface CitaRepositorio extends JpaRepository<Cita, Integer> {
 
     // Actualizar estado de una cita
     @Modifying
-    @Query("UPDATE Cita c SET c.estadoCita = :estado WHERE c.idCita = :idCita")
-    void actualizarEstadoCita(@Param("idCita") Integer idCita, @Param("estado") EstadoCita estado);
+    @Query("UPDATE Cita c SET c.estadoCita = :estado WHERE c.idCita = :id")
+    void actualizarEstadoCita(@Param("id") int idCita, @Param("estado") EstadoCita estado);
+
 
     // Verificar si una cita puede ser cancelada (no está completada ni ya cancelada)
-    @Query("SELECT c FROM Cita c WHERE c.idCita = :idCita AND c.estadoCita IN (co.edu.uniquindio.BarakaLashes.modelo.EstadoCita.PENDIENTE, co.edu.uniquindio.BarakaLashes.modelo.EstadoCita.CONFIRMADA)")
-    Optional<Cita> findCancelableCita(@Param("idCita") Integer idCita);
+    @Query("SELECT c FROM Cita c WHERE c.idCita = :id AND c.estadoCita IN ('PENDIENTE', 'CONFIRMADA')")
+    Optional<Cita> findCancelableCita(@Param("id") int idCita);
 
     // Buscar por nombre de cita (opcional)
     Optional<Cita> findByNombreCita(String nombreCita);
@@ -39,7 +40,4 @@ public interface CitaRepositorio extends JpaRepository<Cita, Integer> {
     @Query("SELECT c FROM Cita c WHERE c.usuario.idUsuario = :idUsuario")
     List<Cita> findByUsuarioIdUsuario(@Param("idUsuario") Integer idUsuario);
 
-    // Buscar citas por empleado
-    @Query("SELECT c FROM Cita c WHERE c.empleado.idEmpleado = :idEmpleado")
-    List<Cita> findByEmpleadoIdEmpleado(@Param("idEmpleado") Integer idEmpleado);
 }

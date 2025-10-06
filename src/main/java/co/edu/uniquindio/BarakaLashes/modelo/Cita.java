@@ -32,19 +32,15 @@ public class Cita {
     @Column(nullable = false, length = 20)
     private EstadoCita estadoCita;
 
-    @ElementCollection(targetClass = Servicio.class)
+    @ElementCollection(targetClass = Servicio.class, fetch = FetchType.EAGER)
     @CollectionTable(
             name = "serviciosCita",
             joinColumns = @JoinColumn(name = "idCita")
     )
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "servicio")
     private Set<Servicio> listaServicios;
 
-
-    @ManyToOne
-    @JoinColumn(name = "id_empleado", nullable = false)
-    private Empleado empleado;
 
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)

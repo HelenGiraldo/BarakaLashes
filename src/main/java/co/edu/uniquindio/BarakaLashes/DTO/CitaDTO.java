@@ -21,5 +21,4 @@ public class CitaDTO {
     private EstadoCita estadoCita;
     private Set<Servicio> serviciosSeleccionados;
     private String emailCliente;
-    private Usuario id_empleado;
 }
