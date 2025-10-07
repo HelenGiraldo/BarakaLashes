@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Citas - BarakaLashes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+<h1>Mis Citas</h1>
+
+<div th:if="${error}" class="error" th:text="${error}"></div>
+<div th:if="${success}" class="success" th:text="${success}"></div>
+
+<div th:if="${citas != null and not citas.isEmpty()}">
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        <tr th:each="cita : ${citas}">
+            <td th:text="${cita.idCita}"></td>
+            <td th:text="${cita.nombreCita}"></td>
+            <td th:text="${cita.fechaCita}"></td>
+            <td th:text="${cita.estadoCita}"></td>
+            <td>
+                <a th:href="@{/citas/historial}">Ver Historial</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div th:if="${citas == null or citas.isEmpty()}">
+    <p>No tienes citas programadas.</p>
+    <a th:href="@{/citas/nueva}">Crear Nueva Cita</a>
+</div>
+
+<br>
+<a th:href="@{/citas/nueva}">Crear Nueva Cita</a>
+</body>
+</html>

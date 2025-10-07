@@ -2,7 +2,6 @@ package co.edu.uniquindio.BarakaLashes.servicio.Implementaciones;
 
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.Cita;
-import co.edu.uniquindio.BarakaLashes.modelo.Empleado;
 import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
 import co.edu.uniquindio.BarakaLashes.modelo.Usuario;
 import co.edu.uniquindio.BarakaLashes.repositorio.CitaRepositorio;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -136,9 +136,39 @@ public class CitaServicioImpl implements CitaServicio {
     }
 
     @Override
-    public List<CitaDTO> listarCitasPorEmail(String emailUsuario) {
-        List<Cita> citas = citaRepo.findByUsuarioEmail(emailUsuario);
-        return citaMapper.citasToCitasDTO(citas);
+    public List<CitaDTO> listarCitasPorUsuarioEmail(String emailUsuario) {
+        log.info("=== BUSCANDO CITAS PARA EMAIL: {} ===", emailUsuario);
+
+        // OPCIÓN 1: Buscar por email directamente si tienes el campo en Cita
+        List<Cita> todasLasCitas = citaRepo.findAll();
+
+        // Debug: mostrar todas las citas
+        log.info("=== TOTAL CITAS EN BD: {} ===", todasLasCitas.size());
+        for (Cita cita : todasLasCitas) {
+            log.info("Cita ID: {}, Nombre: {}, Usuario: {}",
+                    cita.getIdCita(),
+                    cita.getNombreCita(),
+                    cita.getUsuario() != null ? cita.getUsuario().getEmail() : "NULL");
+        }
+
+        // Filtrar citas - prueba diferentes enfoques:
+        List<Cita> citasFiltradas = todasLasCitas.stream()
+                .filter(cita -> {
+                    // Si la cita tiene usuario asociado, comparar emails
+                    if (cita.getUsuario() != null && cita.getUsuario().getEmail() != null) {
+                        boolean match = cita.getUsuario().getEmail().equals(emailUsuario);
+                        if (match) {
+                            log.info("✅ CITA ENCONTRADA POR USUARIO - ID: {}, Email: {}",
+                                    cita.getIdCita(), cita.getUsuario().getEmail());
+                        }
+                        return match;
+                    }
+                    return false;
+                })
+                .toList();
+
+        log.info("=== CITAS FILTRADAS ENCONTRADAS: {} ===", citasFiltradas.size());
+        return citaMapper.citasToCitasDTO(citasFiltradas);
     }
 
     @Override
@@ -153,5 +183,32 @@ public class CitaServicioImpl implements CitaServicio {
 
         citaRepo.actualizarEstadoCita(idCita, EstadoCita.CANCELADA);
         return idCita;
+    }
+
+
+    @Override
+    public List<CitaDTO> obtenerHistorialCitas(String emailUsuario) throws Exception {
+        log.info("=== OBTENIENDO HISTORIAL DE CITAS PARA: {} ===", emailUsuario);
+
+        // Verificar que el usuario existe
+        if (!usuarioRepositorio.existsByEmail(emailUsuario)) {
+            throw new Exception("Usuario no encontrado: " + emailUsuario);
+        }
+
+        // Obtener todas las citas del usuario
+        List<Cita> citas = citaRepo.findByUsuarioEmail(emailUsuario);
+
+        log.info("=== CITAS ENCONTRADAS EN HISTORIAL: {} ===", citas.size());
+
+        // Log para debug
+        for (Cita cita : citas) {
+            log.info("Cita ID: {}, Nombre: {}, Fecha: {}, Estado: {}",
+                    cita.getIdCita(), cita.getNombreCita(), cita.getFechaCita(), cita.getEstadoCita());
+        }
+
+        return citas.stream()
+                .map(citaMapper::citaToCitaDTO)
+                .collect(Collectors.toList());
+
     }
 }

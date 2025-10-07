@@ -2,27 +2,79 @@ package co.edu.uniquindio.BarakaLashes.mappers;
 
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.Cita;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import co.edu.uniquindio.BarakaLashes.modelo.Servicio;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface CitaMapper {
+@Component
+public class CitaMapper {
 
-    @Mappings({
-            @Mapping(source = "listaServicios", target = "serviciosSeleccionados"),
-            @Mapping(source = "usuario.email", target = "emailCliente")
-    })
-    CitaDTO citaToCitaDTO(Cita cita);
+    /**
+     * Convierte una entidad Cita a CitaDTO
+     */
+    public CitaDTO citaToCitaDTO(Cita cita) {
+        if (cita == null) {
+            return null;
+        }
 
-    List<CitaDTO> citasToCitasDTO(List<Cita> citas);
+        CitaDTO dto = new CitaDTO();
+        dto.setIdCita(cita.getIdCita());
+        dto.setNombreCita(cita.getNombreCita());
+        dto.setDescripcionCita(cita.getDescripcionCita());
+        dto.setFechaCita(cita.getFechaCita());
+        dto.setEstadoCita(cita.getEstadoCita());
 
-    @Mappings({
-            @Mapping(source = "serviciosSeleccionados", target = "listaServicios"),
-            @Mapping(target = "usuario", ignore = true),
-            @Mapping(target = "negocio", ignore = true)
-    })
-    Cita citaDTOToCita(CitaDTO citaDTO);
+        // Email del cliente
+        if (cita.getUsuario() != null) {
+            dto.setEmailCliente(cita.getUsuario().getEmail());
+        }
+
+        // Servicios como Set<Servicio> (enum)
+        dto.setServiciosSeleccionados(cita.getListaServicios());
+
+        // Servicios como List<String> para mostrar en la vista
+        if (cita.getListaServicios() != null) {
+            List<String> nombresServicios = cita.getListaServicios().stream()
+                    .map(Servicio::name) // Los enums usan .name()
+                    .collect(Collectors.toList());
+            dto.setServicios(nombresServicios);
+        }
+
+        return dto;
+    }
+
+    /**
+     * Convierte un CitaDTO a entidad Cita
+     */
+    public Cita citaDTOToCita(CitaDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Cita cita = new Cita();
+        cita.setIdCita(dto.getIdCita());
+        cita.setNombreCita(dto.getNombreCita());
+        cita.setDescripcionCita(dto.getDescripcionCita());
+        cita.setFechaCita(dto.getFechaCita());
+        cita.setEstadoCita(dto.getEstadoCita());
+        cita.setListaServicios(dto.getServiciosSeleccionados());
+
+        // El usuario se asocia en el servicio
+        return cita;
+    }
+
+    /**
+     * Convierte una lista de Citas a lista de CitaDTOs
+     */
+    public List<CitaDTO> citasToCitasDTO(List<Cita> citas) {
+        if (citas == null) {
+            return List.of();
+        }
+
+        return citas.stream()
+                .map(this::citaToCitaDTO)
+                .collect(Collectors.toList());
+    }
 }

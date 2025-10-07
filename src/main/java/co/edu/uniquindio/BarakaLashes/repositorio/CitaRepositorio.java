@@ -14,30 +14,32 @@ import java.util.Optional;
 @Repository
 public interface CitaRepositorio extends JpaRepository<Cita, Integer> {
 
-    // Buscar citas por usuario
-    List<Cita> findByUsuarioEmail(String emailUsuario);
+    // Buscar citas por ID del usuario
+    List<Cita> findByUsuarioIdUsuario(Integer idUsuario);
 
-    // Buscar cita por ID y email de usuario (para seguridad)
-    Optional<Cita> findByIdCitaAndUsuarioEmail(Integer idCita, String emailUsuario);
+    // Buscar citas por email del usuario (a través de la relación)
+    List<Cita> findByUsuarioEmail(String email);
+
+    // Buscar citas por email del usuario ordenadas por fecha descendente
+    List<Cita> findByUsuarioEmailOrderByFechaCitaDesc(String email);
 
     // Buscar citas por estado
-    List<Cita> findByEstadoCita(EstadoCita estadoCita);
+    List<Cita> findByEstadoCita(EstadoCita estado);
+
+    // Buscar citas por usuario y estado
+    List<Cita> findByUsuarioEmailAndEstadoCita(String email, EstadoCita estado);
+
+    // Query personalizada para buscar citas cancelables
+    @Query("SELECT c FROM Cita c WHERE c.idCita = :idCita AND " +
+            "(c.estadoCita = 'PENDIENTE' OR c.estadoCita = 'CONFIRMADA')")
+    Optional<Cita> findCancelableCita(@Param("idCita") Integer idCita);
 
     // Actualizar estado de una cita
     @Modifying
-    @Query("UPDATE Cita c SET c.estadoCita = :estado WHERE c.idCita = :id")
-    void actualizarEstadoCita(@Param("id") int idCita, @Param("estado") EstadoCita estado);
+    @Query("UPDATE Cita c SET c.estadoCita = :estado WHERE c.idCita = :idCita")
+    void actualizarEstadoCita(@Param("idCita") Integer idCita, @Param("estado") EstadoCita estado);
 
-
-    // Verificar si una cita puede ser cancelada (no está completada ni ya cancelada)
-    @Query("SELECT c FROM Cita c WHERE c.idCita = :id AND c.estadoCita IN ('PENDIENTE', 'CONFIRMADA')")
-    Optional<Cita> findCancelableCita(@Param("id") int idCita);
-
-    // Buscar por nombre de cita (opcional)
-    Optional<Cita> findByNombreCita(String nombreCita);
-
-    // Buscar citas por usuario (por ID en lugar de email)
-    @Query("SELECT c FROM Cita c WHERE c.usuario.idUsuario = :idUsuario")
-    List<Cita> findByUsuarioIdUsuario(@Param("idUsuario") Integer idUsuario);
-
+    // Query para obtener todas las citas (útil para debug)
+    @Query("SELECT c FROM Cita c LEFT JOIN FETCH c.usuario LEFT JOIN FETCH c.listaServicios")
+    List<Cita> obtenerTodasLasCitasConRelaciones();
 }

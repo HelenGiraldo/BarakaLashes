@@ -5,5 +5,5 @@ public enum Servicio {
     VOLUMEN,
     CEJAS,
     TINTE,
-    PERMANENTE
+    PERMANENTE;
 }
