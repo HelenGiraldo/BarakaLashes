@@ -22,6 +22,7 @@ public class CitaDTO {
     private Set<Servicio> serviciosSeleccionados; // Para crear/editar citas (ENUM)
     private List<String> servicios; // Para mostrar en el historial (String)
     private String emailCliente;
+    private boolean cancelable;
 
     public String getFechaFormateada() {
         if (fechaCita == null) {
@@ -37,4 +38,6 @@ public class CitaDTO {
         }
         return estadoCita.name().toLowerCase();
     }
+
+
 }

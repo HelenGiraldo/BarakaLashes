@@ -2,9 +2,11 @@ package co.edu.uniquindio.BarakaLashes.mappers;
 
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.Cita;
+import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
 import co.edu.uniquindio.BarakaLashes.modelo.Servicio;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +27,11 @@ public class CitaMapper {
         dto.setDescripcionCita(cita.getDescripcionCita());
         dto.setFechaCita(cita.getFechaCita());
         dto.setEstadoCita(cita.getEstadoCita());
+        dto.setCancelable(
+                (cita.getEstadoCita() == EstadoCita.PENDIENTE || cita.getEstadoCita() == EstadoCita.CONFIRMADA)
+                        && cita.getFechaCita().isAfter(LocalDateTime.now().plusHours(24))
+        );
+
 
         // Email del cliente
         if (cita.getUsuario() != null) {

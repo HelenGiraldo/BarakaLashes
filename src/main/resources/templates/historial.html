@@ -388,7 +388,7 @@
                     <form th:action="@{'/historial/cancelar/' + ${cita.idCita}}" method="post">
                         <button type="submit"
                                 class="btn btn-cancelar"
-                                th:disabled="${cita.estadoCita != 'PENDIENTE' and cita.estadoCita != 'CONFIRMADA'}">
+                                th:disabled="${!cita.cancelable}">
                             <i class="fas fa-times"></i> Cancelar Cita
                         </button>
                     </form>
