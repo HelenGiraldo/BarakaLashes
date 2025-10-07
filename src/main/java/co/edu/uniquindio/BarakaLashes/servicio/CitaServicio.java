@@ -1,5 +1,6 @@
 package co.edu.uniquindio.BarakaLashes.servicio;
 
+import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaActualizadaDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 
 import java.util.List;
@@ -31,6 +32,8 @@ public interface CitaServicio {
      */
     int eliminarCita(int idCita) throws Exception;
 
+
+    int modificarCita(int idCita, CitaActualizadaDTO citaDTO) throws Exception;
     /**
      * Obtiene una cita por su ID
      * @param idCita ID de la cita

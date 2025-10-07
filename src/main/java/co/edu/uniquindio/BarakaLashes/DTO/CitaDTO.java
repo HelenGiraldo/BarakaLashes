@@ -39,5 +39,13 @@ public class CitaDTO {
         return estadoCita.name().toLowerCase();
     }
 
+    public boolean isModificable() {
+        if (estadoCita == null) {
+            return false;
+        }
+        // Solo se puede modificar si está PENDIENTE o CONFIRMADA (no cancelada ni completada)
+        return estadoCita == EstadoCita.PENDIENTE || estadoCita == EstadoCita.CONFIRMADA;
+    }
+
 
 }

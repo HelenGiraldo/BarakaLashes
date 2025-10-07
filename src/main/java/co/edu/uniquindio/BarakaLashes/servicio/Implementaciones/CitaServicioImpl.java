@@ -1,5 +1,6 @@
 package co.edu.uniquindio.BarakaLashes.servicio.Implementaciones;
 
+import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaActualizadaDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.Cita;
 import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
@@ -96,6 +97,23 @@ public class CitaServicioImpl implements CitaServicio {
         cita.setEstadoCita(citaDTO.getEstadoCita());
         cita.setListaServicios(citaDTO.getServiciosSeleccionados());
 
+
+        citaRepo.save(cita);
+        return cita.getIdCita();
+    }
+
+    @Override
+    public int modificarCita(int idCita, CitaActualizadaDTO citaDTO) throws Exception {
+        // Verificar que la cita existe
+        Optional<Cita> citaOptional = citaRepo.findById(idCita);
+        if (citaOptional.isEmpty()) {
+            throw new Exception("Cita no encontrada con ID: " + idCita);
+        }
+
+        Cita cita = citaOptional.get();
+
+        cita.setFechaCita(citaDTO.getNuevaFechaHora());
+        cita.setListaServicios(citaDTO.getServicioRequerido());
 
         citaRepo.save(cita);
         return cita.getIdCita();

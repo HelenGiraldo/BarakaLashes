@@ -49,7 +49,6 @@
             padding: 30px;
         }
 
-        /* Alertas */
         .alert {
             padding: 15px 20px;
             border-radius: 10px;
@@ -76,7 +75,6 @@
             font-size: 1.2rem;
         }
 
-        /* Estado vacío */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -100,7 +98,6 @@
             font-size: 1.1rem;
         }
 
-        /* Grid de citas */
         .citas-grid {
             display: grid;
             gap: 20px;
@@ -255,6 +252,15 @@
             cursor: not-allowed;
         }
 
+        .btn-modificar {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-modificar:hover {
+            background: #0069d9;
+        }
+
         .btn-nueva {
             background: #28a745;
             color: white;
@@ -286,51 +292,43 @@
                 margin: 10px;
                 border-radius: 10px;
             }
-
             .header {
                 padding: 20px;
             }
-
             .header h1 {
                 font-size: 2rem;
             }
-
             .content {
                 padding: 20px;
             }
-
             .cita-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
-
             .cita-actions {
                 width: 100%;
             }
-
             .btn {
                 flex: 1;
                 justify-content: center;
             }
-
             .actions-header {
                 flex-direction: column;
                 align-items: stretch;
             }
         }
     </style>
+
 </head>
 <body>
 <div class="container">
-    <!-- Header -->
     <div class="header">
         <h1><i class="fas fa-history"></i> Mi Historial de Citas</h1>
         <p>Gestiona y revisa todas tus citas programadas</p>
     </div>
 
-    <!-- Contenido -->
+    ```
     <div class="content">
-        <!-- Alertas -->
         <div th:if="${success}" class="alert alert-success">
             <i class="fas fa-check-circle"></i>
             <span th:text="${success}"></span>
@@ -341,7 +339,6 @@
             <span th:text="${error}"></span>
         </div>
 
-        <!-- Encabezado con acciones -->
         <div class="actions-header">
             <h2 th:text="${titulo}">Mis Citas</h2>
             <a th:href="@{/citas/nueva}" class="btn-nueva">
@@ -349,13 +346,11 @@
             </a>
         </div>
 
-        <!-- Grid de citas -->
         <div class="citas-grid" th:if="${not citas?.isEmpty()}">
             <div th:each="cita : ${citas}" class="cita-card">
                 <div class="cita-header">
                     <h3 class="cita-title" th:text="${cita.nombreCita}">Nombre de la cita</h3>
-                    <span th:classappend="'cita-estado estado-' + ${cita.estadoCitaLowerCase}"
-                          th:text="${cita.estadoCita}">ESTADO</span>
+                    <span th:classappend="'cita-estado estado-' + ${cita.estadoCitaLowerCase}" th:text="${cita.estadoCita}">ESTADO</span>
                 </div>
 
                 <div class="cita-info">
@@ -372,8 +367,7 @@
                         <div>
                             <strong>Servicios:</strong>
                             <div class="servicios-tags">
-                                    <span th:each="servicio : ${cita.servicios}"
-                                          class="servicio-tag" th:text="${servicio}">Servicio</span>
+                                <span th:each="servicio : ${cita.servicios}" class="servicio-tag" th:text="${servicio}">Servicio</span>
                             </div>
                         </div>
                     </div>
@@ -385,10 +379,22 @@
                 </div>
 
                 <div class="cita-actions">
+                    <!-- Botón de modificar: se convierte en button deshabilitado si no es modificable -->
+                    <a th:if="${cita.modificable}"
+                       th:href="@{'/historial/modificar/' + ${cita.idCita}}"
+                       class="btn btn-modificar">
+                        <i class="fas fa-edit"></i> Modificar Cita
+                    </a>
+                    <button th:if="${!cita.modificable}"
+                            type="button"
+                            class="btn btn-modificar"
+                            disabled
+                            style="opacity: 0.6; cursor: not-allowed;">
+                        <i class="fas fa-edit"></i> Modificar Cita
+                    </button>
+
                     <form th:action="@{'/historial/cancelar/' + ${cita.idCita}}" method="post">
-                        <button type="submit"
-                                class="btn btn-cancelar"
-                                th:disabled="${!cita.cancelable}">
+                        <button type="submit" class="btn btn-cancelar" th:disabled="${!cita.cancelable}">
                             <i class="fas fa-times"></i> Cancelar Cita
                         </button>
                     </form>
@@ -396,7 +402,6 @@
             </div>
         </div>
 
-        <!-- Estado vacío -->
         <div th:if="${citas?.isEmpty()}" class="empty-state">
             <i class="fas fa-calendar-times"></i>
             <h3>No tienes citas en tu historial</h3>
@@ -406,18 +411,16 @@
             </a>
         </div>
     </div>
+    ```
+
 </div>
 
 <script>
-    // Confirmación simple para cancelar citas
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('form[action*="cancelar"]');
-
         forms.forEach(form => {
             form.addEventListener('submit', function(e) {
                 const button = this.querySelector('.btn-cancelar');
-
-                // Solo pedir confirmación si el botón NO está deshabilitado
                 if (!button.disabled) {
                     if (!confirm('¿Estás seguro de que deseas cancelar esta cita?')) {
                         e.preventDefault();

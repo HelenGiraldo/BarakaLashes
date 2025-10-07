@@ -1,5 +1,6 @@
 package co.edu.uniquindio.BarakaLashes.controlador;
 
+import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaActualizadaDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 
 import co.edu.uniquindio.BarakaLashes.servicio.CitaServicio;
@@ -46,6 +47,27 @@ public class CitaAPIController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(-1);
         }
     }
+
+    @PatchMapping("/{idCita}")
+    public ResponseEntity<?> modificarCita(
+            @PathVariable int idCita,
+            @RequestBody CitaActualizadaDTO citaActualizadaDTO) {
+
+        try {
+            // Llamamos al servicio para actualizar la cita
+            int idActualizada = citaServicio.modificarCita(idCita, citaActualizadaDTO);
+
+            // Respondemos con el ID actualizado y un mensaje
+            return ResponseEntity.ok("Cita actualizada correctamente con ID: " + idActualizada);
+
+        } catch (Exception e) {
+            // Si algo falla, devolvemos un 400 con el mensaje de error
+            return ResponseEntity
+                    .badRequest()
+                    .body("Error al actualizar la cita: " + e.getMessage());
+        }
+    }
+
 
     @DeleteMapping("/{idCita}")
     public ResponseEntity<Integer> eliminarCita(@PathVariable int idCita) {
