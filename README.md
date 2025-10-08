@@ -1,4 +1,5 @@
 🪞 BarakaLashes — Sistema de Gestión de Citas para Centro Estético
+
 💻 Descripción del proyecto
 
 BarakaLashes es una aplicación web desarrollada con Spring Boot, JavaScript, HTML y CSS, diseñada para la gestión integral de citas en un centro estético.
@@ -11,14 +12,22 @@ El sistema busca optimizar la organización de las citas, mejorar la experiencia
 🖥️Backend
 
 Java
+
 Spring Boot
+
 Spring Data JPA
+
 Spring Web
+
 Maven
+
 MySQL
 
 🌐Frontend
 
+
 HTML5
+
 CSS
+
 JavaScript
