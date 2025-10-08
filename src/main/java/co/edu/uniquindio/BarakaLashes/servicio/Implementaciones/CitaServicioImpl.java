@@ -183,7 +183,7 @@ public class CitaServicioImpl implements CitaServicio {
                     if (cita.getUsuario() != null && cita.getUsuario().getEmail() != null) {
                         boolean match = cita.getUsuario().getEmail().equals(emailUsuario);
                         if (match) {
-                            log.info("✅ CITA ENCONTRADA POR USUARIO - ID: {}, Email: {}",
+                            log.info("CITA ENCONTRADA POR USUARIO - ID: {}, Email: {}",
                                     cita.getIdCita(), cita.getUsuario().getEmail());
                         }
                         return match;

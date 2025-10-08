@@ -10,9 +10,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.Optional;
 
+/**
+ * @Slf4j (de Lombok) genera un logger 'log' para registrar eventos.
+ * SLF4J (Simple Logging Facade for Java) permite crear logs independientes
+ * del framework subyacente (Logback, Log4j, etc.).
+ * Ejemplo de uso: log.info("Mensaje {}", valor), log.warn(...), log.error(...).
+ */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -64,7 +69,7 @@ public class LoginController {
             session.setAttribute("usuarioNombre", usuario.getNombre());
             session.setAttribute("usuarioAutenticado", true);
 
-            log.info("✅ Login exitoso para: {}", email);
+            log.info(" Login exitoso para: {}", email);
 
             return "redirect:/home";
 

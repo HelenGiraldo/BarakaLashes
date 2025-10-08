@@ -66,11 +66,11 @@ public class AuthController {
 
         try {
             authServicio.registrar(registroDTO);
-            log.info("✅ REGISTRO EXITOSO");
+            log.info("REGISTRO EXITOSO");
             redirectAttributes.addFlashAttribute("success", "¡Registro exitoso! Ahora puedes iniciar sesión");
             return "redirect:/auth/login";
         } catch (Exception e) {
-            log.error("❌ ERROR EN REGISTRO: {}", e.getMessage());
+            log.error("ERROR EN REGISTRO: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             redirectAttributes.addFlashAttribute("registroDTO", registroDTO);
             return "redirect:/auth/registro";
@@ -104,23 +104,23 @@ public class AuthController {
                     session.setAttribute("usuarioNombre", usuario.getNombre());
                     session.setAttribute("usuarioAutenticado", true);
 
-                    log.info("✅ LOGIN EXITOSO - Usuario: {} (ID: {})", usuario.getEmail(), usuario.getIdUsuario());
+                    log.info("LOGIN EXITOSO - Usuario: {} (ID: {})", usuario.getEmail(), usuario.getIdUsuario());
                     log.info("Datos guardados en sesión correctamente");
 
                     redirectAttributes.addFlashAttribute("success", "¡Bienvenido " + usuario.getNombre() + "!");
                     return "redirect:/citas/nueva";
                 } else {
-                    log.error("❌ Usuario encontrado por validación pero no en BD");
+                    log.error(" Usuario encontrado por validación pero no en BD");
                     redirectAttributes.addFlashAttribute("error", "Error en el sistema");
                     return "redirect:/auth/login";
                 }
             } else {
-                log.warn("❌ Credenciales incorrectas para: {}", email);
+                log.warn("Credenciales incorrectas para: {}", email);
                 redirectAttributes.addFlashAttribute("error", "Credenciales incorrectas");
                 return "redirect:/auth/login";
             }
         } catch (Exception e) {
-            log.error("❌ Error en login: {}", e.getMessage(), e);
+            log.error(" Error en login: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("error", "Error al iniciar sesión");
             return "redirect:/auth/login";
         }

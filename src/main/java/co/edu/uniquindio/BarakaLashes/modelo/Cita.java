@@ -41,7 +41,6 @@ public class Cita {
     @Column(name = "servicio")
     private Set<Servicio> listaServicios;
 
-
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
@@ -49,8 +48,4 @@ public class Cita {
     @ManyToOne
     @JoinColumn(name = "negocio_id")
     private Negocio negocio;
-
-
-
-
 }

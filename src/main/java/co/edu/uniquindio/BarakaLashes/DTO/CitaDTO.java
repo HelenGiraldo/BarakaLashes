@@ -19,8 +19,8 @@ public class CitaDTO {
     private String descripcionCita;
     private LocalDateTime fechaCita;
     private EstadoCita estadoCita;
-    private Set<Servicio> serviciosSeleccionados; // Para crear/editar citas (ENUM)
-    private List<String> servicios; // Para mostrar en el historial (String)
+    private Set<Servicio> serviciosSeleccionados;
+    private List<String> servicios;
     private String emailCliente;
     private boolean cancelable;
 

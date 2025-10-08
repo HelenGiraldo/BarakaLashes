@@ -182,7 +182,7 @@ public class AuthServicioImpl implements AuthServicio {
         usuario.setRol(rol);
 
         Usuario usuarioGuardado = usuarioRepositorio.save(usuario);
-        log.info("✅ Usuario guardado con ID: {}", usuarioGuardado.getIdUsuario());
+        log.info("Usuario guardado con ID: {}", usuarioGuardado.getIdUsuario());
 
         return usuarioGuardado;
     }
