@@ -1,18 +1,24 @@
 package co.edu.uniquindio.BarakaLashes.controlador;
 
+import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaCalendarioDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
 import co.edu.uniquindio.BarakaLashes.servicio.CitaServicio;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -56,18 +62,18 @@ public class CitaController {
             if (usuarioEmail == null) {
                 log.error("Usuario no autenticado");
                 model.addAttribute("error", "Debes iniciar sesión para ver tus citas");
-                return "listarCitas";
+                return "listaCitas";
             }
 
             List<CitaDTO> citas = citaServicio.listarCitasPorUsuarioEmail(usuarioEmail);
 
             log.info("Citas encontradas: {}", citas.size());
             model.addAttribute("citas", citas);
-            return "listarCitas";
+            return "listaCitas";
         } catch (Exception e) {
             log.error("Error al listar citas: {}", e.getMessage());
             model.addAttribute("error", "Error al cargar las citas: " + e.getMessage());
-            return "listarCitas";
+            return "listaCitas";
         }
     }
 
@@ -132,11 +138,11 @@ public class CitaController {
             cita.setEstadoCita(EstadoCita.CANCELADA);
             citaServicio.actualizarCita(idCita, cita);
 
-            log.info("✅ CITA CANCELADA EXITOSAMENTE");
+            log.info("CITA CANCELADA EXITOSAMENTE");
             redirectAttributes.addFlashAttribute("success", "Cita cancelada exitosamente");
 
         } catch (Exception e) {
-            log.error("❌ ERROR AL CANCELAR CITA: {}", e.getMessage());
+            log.error(" ERROR AL CANCELAR CITA: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Error al cancelar cita: " + e.getMessage());
         }
 
@@ -149,10 +155,10 @@ public class CitaController {
             List<CitaDTO> citas = citaServicio.listarCitasPorUsuario(idUsuario);
             model.addAttribute("citas", citas);
             model.addAttribute("titulo", "Citas del Usuario " + idUsuario);
-            return "listarCitas";
+            return "listaCitas";
         } catch (Exception e) {
             model.addAttribute("error", "Error al listar citas del usuario: " + e.getMessage());
-            return "listarCitas";
+            return "listaCitas";
         }
     }
 
@@ -180,4 +186,81 @@ public class CitaController {
 
         return "historial";
     }
+
+    @GetMapping("/rango")
+    @ResponseBody
+    public ResponseEntity<?> obtenerCitasPorRango(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam(required = false) Integer idUsuario,
+            @RequestParam(required = false) Integer idEmpleado) {
+
+        try {
+            log.info("Solicitando citas por rango: {} a {}, usuario: {}, empleado: {}",
+                    fechaInicio, fechaFin, idUsuario, idEmpleado);
+
+            List<CitaDTO> citas = citaServicio.obtenerCitasPorRango(fechaInicio, fechaFin, idUsuario, idEmpleado);
+            return ResponseEntity.ok(citas);
+
+        } catch (Exception e) {
+            log.error("Error al obtener citas por rango: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Map.of("error", "Error al obtener citas: " + e.getMessage()));
+        }
+    }
+
+
+    @GetMapping("/calendario")
+    @ResponseBody
+    public ResponseEntity<?> obtenerCitasCalendario(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam(required = false) Integer idUsuario,
+            @RequestParam(required = false) Integer idEmpleado) {
+
+        try {
+            List<CitaCalendarioDTO> citas = citaServicio.obtenerCitasParaCalendario(
+                    fechaInicio, fechaFin, idUsuario, idEmpleado);
+            return ResponseEntity.ok(citas);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("error", "Error al obtener citas para calendario: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/calendario/vista")
+    public String mostrarVistaCalendario(Model model) {
+        try {
+            LocalDate hoy = LocalDate.now();
+            model.addAttribute("fechaInicio", hoy.withDayOfMonth(1));
+            model.addAttribute("fechaFin", hoy.withDayOfMonth(hoy.lengthOfMonth()));
+
+            return "calendario";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al cargar el calendario");
+            return "calendario";
+        }
+    }
+
+
+    @GetMapping("/disponibilidad")
+    @ResponseBody
+    public ResponseEntity<?> obtenerHorariosDisponibles(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam Integer idEmpleado) {
+
+        try {
+            List<LocalDateTime> horarios = citaServicio.obtenerHorariosDisponibles(fecha, idEmpleado);
+            return ResponseEntity.ok(horarios);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("error", "Error al obtener horarios disponibles: " + e.getMessage()));
+        }
+    }
+
+
+
+
 }

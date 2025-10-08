@@ -1,9 +1,12 @@
 package co.edu.uniquindio.BarakaLashes.servicio.Implementaciones;
 
 import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaActualizadaDTO;
+import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaCalendarioDTO;
+import co.edu.uniquindio.BarakaLashes.DTO.Cita.ResumenCitasDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.Cita;
 import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
+import co.edu.uniquindio.BarakaLashes.modelo.Servicio;
 import co.edu.uniquindio.BarakaLashes.modelo.Usuario;
 import co.edu.uniquindio.BarakaLashes.repositorio.CitaRepositorio;
 import co.edu.uniquindio.BarakaLashes.repositorio.UsuarioRepositorio;
@@ -15,6 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -229,4 +236,236 @@ public class CitaServicioImpl implements CitaServicio {
                 .collect(Collectors.toList());
 
     }
+
+    @Override
+    public List<CitaDTO> obtenerCitasPorRango(LocalDate fechaInicio, LocalDate fechaFin,
+                                              Integer idUsuario, Integer idEmpleado) throws Exception {
+
+        log.info("Consultando citas por rango: {} a {}, usuario: {}, empleado: {}",
+                fechaInicio, fechaFin, idUsuario, idEmpleado);
+
+        LocalDateTime inicio = fechaInicio.atStartOfDay();
+        LocalDateTime fin = fechaFin.atTime(23, 59, 59);
+
+        List<Cita> citas;
+
+        if (idUsuario != null && idEmpleado != null) {
+            // Usar el método correcto del repositorio
+            citas = citaRepo.findByFechaCitaBetweenAndUsuarioIdUsuarioAndNegocioIdNegocio(
+                    inicio, fin, idUsuario, idEmpleado);
+        } else if (idUsuario != null) {
+            citas = citaRepo.findByFechaCitaBetweenAndUsuarioIdUsuario(inicio, fin, idUsuario);
+        } else if (idEmpleado != null) {
+            citas = citaRepo.findByFechaCitaBetweenAndNegocioIdNegocio(inicio, fin, idEmpleado);
+        } else {
+            citas = citaRepo.findByFechaCitaBetween(inicio, fin);
+        }
+
+        return convertirCitasADTO(citas);
+    }
+
+    @Override
+    public List<CitaCalendarioDTO> obtenerCitasParaCalendario(LocalDate fechaInicio, LocalDate fechaFin,
+                                                              Integer idUsuario, Integer idEmpleado) throws Exception {
+
+        List<CitaDTO> citas = obtenerCitasPorRango(fechaInicio, fechaFin, idUsuario, idEmpleado);
+
+        return citas.stream()
+                .map(this::convertirACalendarioDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LocalDateTime> obtenerHorariosDisponibles(LocalDate fecha, Integer idEmpleado) throws Exception {
+        log.info("Consultando horarios disponibles para fecha: {}, empleado: {}", fecha, idEmpleado);
+
+        LocalDateTime inicioDia = fecha.atStartOfDay();
+        LocalDateTime finDia = fecha.atTime(23, 59, 59);
+
+        // Usar el método correcto del repositorio
+        List<Cita> citasExistentes = citaRepo.findByFechaCitaBetweenAndNegocioIdNegocio(
+                inicioDia, finDia, idEmpleado);
+
+        List<LocalDateTime> horariosDisponibles = generarHorariosDelDia(fecha);
+
+        return horariosDisponibles.stream()
+                .filter(horario -> !estaOcupado(horario, citasExistentes))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ResumenCitasDTO obtenerResumenCitas(LocalDate fechaInicio, LocalDate fechaFin, Integer idEmpleado) throws Exception {
+        List<CitaDTO> citas = obtenerCitasPorRango(fechaInicio, fechaFin, null, idEmpleado);
+
+        long totalCitas = citas.size();
+        long citasConfirmadas = citas.stream()
+                .filter(c -> c.getEstadoCita() == EstadoCita.CONFIRMADA)
+                .count();
+        long citasCanceladas = citas.stream()
+                .filter(c -> c.getEstadoCita() == EstadoCita.CANCELADA)
+                .count();
+        long citasCompletadas = citas.stream()
+                .filter(c -> c.getEstadoCita() == EstadoCita.COMPLETADA)
+                .count();
+
+        return ResumenCitasDTO.builder()
+                .totalCitas(totalCitas)
+                .citasConfirmadas(citasConfirmadas)
+                .citasCanceladas(citasCanceladas)
+                .citasCompletadas(citasCompletadas)
+                .citasPendientes(totalCitas - citasConfirmadas - citasCanceladas - citasCompletadas)
+                .build();
+    }
+
+    // 🔧 MÉTODOS AUXILIARES PRIVADOS
+
+    private List<CitaDTO> convertirCitasADTO(List<Cita> citas) {
+        return citas.stream()
+                .map(this::convertirCitaADTO)
+                .collect(Collectors.toList());
+    }
+
+    private CitaDTO convertirCitaADTO(Cita cita) {
+        CitaDTO dto = new CitaDTO();
+        dto.setIdCita(cita.getIdCita());
+        dto.setNombreCita(cita.getNombreCita());
+        dto.setDescripcionCita(cita.getDescripcionCita());
+        dto.setFechaCita(cita.getFechaCita());
+        dto.setEstadoCita(cita.getEstadoCita());
+        dto.setServiciosSeleccionados(cita.getListaServicios());
+
+        if (cita.getUsuario() != null) {
+            dto.setEmailCliente(cita.getUsuario().getEmail());
+        }
+
+        dto.setCancelable(cita.getEstadoCita() == EstadoCita.PENDIENTE ||
+                cita.getEstadoCita() == EstadoCita.CONFIRMADA);
+        return dto;
+    }
+
+    private CitaCalendarioDTO convertirACalendarioDTO(CitaDTO cita) {
+        return CitaCalendarioDTO.builder()
+                .id(cita.getIdCita())
+                .title(cita.getNombreCita())
+                .start(cita.getFechaCita())
+                .end(cita.getFechaCita().plusHours(1))
+                .cliente(cita.getEmailCliente())
+                .servicios(cita.getServiciosSeleccionados() != null ?
+                        cita.getServiciosSeleccionados().stream()
+                                .map(Enum::name)
+                                .collect(Collectors.toList()) : Collections.emptyList())
+                .estado(cita.getEstadoCita())
+                .backgroundColor(obtenerColorPorEstado(cita.getEstadoCita()))
+                .build();
+    }
+
+    private String obtenerColorPorEstado(EstadoCita estado) {
+        if (estado == null) return "#6c757d";
+
+        switch (estado) {
+            case CONFIRMADA: return "#28a745";
+            case PENDIENTE: return "#ffc107";
+            case CANCELADA: return "#dc3545";
+            case COMPLETADA: return "#17a2b8";
+            default: return "#6c757d";
+        }
+    }
+
+    private List<LocalDateTime> generarHorariosDelDia(LocalDate fecha) {
+        List<LocalDateTime> horarios = new ArrayList<>();
+        LocalDateTime horario = fecha.atTime(9, 0);
+
+        while (horario.getHour() < 18) {
+            horarios.add(horario);
+            horario = horario.plusMinutes(30);
+        }
+
+        return horarios;
+    }
+
+    private boolean estaOcupado(LocalDateTime horario, List<Cita> citasExistentes) {
+        return citasExistentes.stream()
+                .anyMatch(cita -> {
+                    // Verificar si el horario coincide (considerando duración de la cita)
+                    LocalDateTime inicioCita = cita.getFechaCita();
+                    LocalDateTime finCita = inicioCita.plusHours(1); // Asumiendo 1 hora de duración
+
+                    return !horario.isBefore(inicioCita) && horario.isBefore(finCita) &&
+                            cita.getEstadoCita() != EstadoCita.CANCELADA;
+                });
+    }
+
+
+    @Override
+    public List<CitaDTO> obtenerCitasPorRangoFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) throws Exception {
+        log.info("=== OBTENIENDO CITAS POR RANGO: {} - {} ===", fechaInicio, fechaFin);
+
+        // USAR MÉTODO QUE SÍ EXISTE
+        List<Cita> citas = citaRepo.findByFechaCitaBetween(fechaInicio, fechaFin);
+        log.info("Citas encontradas en el rango: {}", citas.size());
+
+        return convertirCitasADTO(citas); // Usar tu método auxiliar
+    }
+
+    @Override
+    public List<CitaDTO> obtenerCitasConFiltros(LocalDateTime fechaInicio, LocalDateTime fechaFin,
+                                                String emailCliente, EstadoCita estado) throws Exception {
+        log.info("=== OBTENIENDO CITAS CON FILTROS ===");
+        log.info("Rango: {} - {}", fechaInicio, fechaFin);
+        log.info("Cliente: {}, Estado: {}", emailCliente, estado);
+
+        List<Cita> citas;
+
+        // IMPLEMENTAR FILTROS USANDO MÉTODOS EXISTENTES
+        if (emailCliente != null && estado != null) {
+            // Filtrar por email y estado
+            citas = citaRepo.findByUsuarioEmailAndEstadoCita(emailCliente, estado);
+            // Luego filtrar por fecha
+            citas = citas.stream()
+                    .filter(c -> !c.getFechaCita().isBefore(fechaInicio) && !c.getFechaCita().isAfter(fechaFin))
+                    .collect(Collectors.toList());
+        } else if (emailCliente != null) {
+            // Solo filtrar por email
+            citas = citaRepo.findByUsuarioEmail(emailCliente);
+            citas = citas.stream()
+                    .filter(c -> !c.getFechaCita().isBefore(fechaInicio) && !c.getFechaCita().isAfter(fechaFin))
+                    .collect(Collectors.toList());
+        } else if (estado != null) {
+            // Solo filtrar por estado y fecha
+            citas = citaRepo.findByEstadoCitaAndFechaCitaBetween(estado, fechaInicio, fechaFin);
+        } else {
+            // Solo por fecha
+            citas = citaRepo.findByFechaCitaBetween(fechaInicio, fechaFin);
+        }
+
+        log.info("Citas encontradas: {}", citas.size());
+        return convertirCitasADTO(citas);
+    }
+
+    @Override
+    public List<CitaDTO> buscarCitasPorCliente(String busqueda) throws Exception {
+        log.info("=== BUSCANDO CITAS POR CLIENTE: {} ===", busqueda);
+
+        // BUSCAR POR EMAIL DEL CLIENTE (método que existe)
+        List<Cita> citas = citaRepo.findByUsuarioEmail(busqueda);
+        log.info("Citas encontradas: {}", citas.size());
+
+        return convertirCitasADTO(citas);
+    }
+
+    @Override
+    public List<CitaDTO> buscarCitasPorServicio(Servicio servicio) throws Exception {
+        log.info("=== BUSCANDO CITAS POR SERVICIO: {} ===", servicio);
+
+        // OBTENER TODAS LAS CITAS Y FILTRAR POR SERVICIO
+        List<Cita> todasLasCitas = citaRepo.findAll();
+        List<Cita> citasFiltradas = todasLasCitas.stream()
+                .filter(cita -> cita.getListaServicios() != null &&
+                        cita.getListaServicios().contains(servicio))
+                .collect(Collectors.toList());
+
+        log.info("Citas encontradas: {}", citasFiltradas.size());
+        return convertirCitasADTO(citasFiltradas);
+    }
+
 }

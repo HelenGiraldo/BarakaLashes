@@ -1,8 +1,14 @@
 package co.edu.uniquindio.BarakaLashes.servicio;
 
 import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaActualizadaDTO;
+import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaCalendarioDTO;
+import co.edu.uniquindio.BarakaLashes.DTO.Cita.ResumenCitasDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
+import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
+import co.edu.uniquindio.BarakaLashes.modelo.Servicio;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CitaServicio {
@@ -77,4 +83,80 @@ public interface CitaServicio {
      * @throws Exception si el usuario no existe
      */
     List<CitaDTO> obtenerHistorialCitas(String emailUsuario) throws Exception;
+
+
+
+
+
+    /**
+     * Consulta citas por rango de fechas con filtros opcionales
+     * @param fechaInicio Fecha de inicio del rango
+     * @param fechaFin Fecha de fin del rango
+     * @param idUsuario Filtro opcional por ID de usuario
+     * @param idEmpleado Filtro opcional por ID de empleado/negocio
+     * @return Lista de citas en el rango especificado
+     * @throws Exception si hay error en la consulta
+     */
+    List<CitaDTO> obtenerCitasPorRango(LocalDate fechaInicio, LocalDate fechaFin,
+                                       Integer idUsuario, Integer idEmpleado) throws Exception;
+
+    /**
+     * Obtiene citas formateadas para calendario
+     * @param fechaInicio Fecha de inicio
+     * @param fechaFin Fecha de fin
+     * @param idUsuario Filtro por usuario
+     * @param idEmpleado Filtro por empleado
+     * @return Lista de citas en formato calendario
+     * @throws Exception si hay error en la consulta
+     */
+    List<CitaCalendarioDTO> obtenerCitasParaCalendario(LocalDate fechaInicio, LocalDate fechaFin,
+                                                       Integer idUsuario, Integer idEmpleado) throws Exception;
+
+    /**
+     * Obtiene horarios disponibles para una fecha y empleado específicos
+     * @param fecha Fecha a consultar
+     * @param idEmpleado ID del empleado/negocio
+     * @return Lista de horarios disponibles
+     * @throws Exception si hay error en la consulta
+     */
+    List<LocalDateTime> obtenerHorariosDisponibles(LocalDate fecha, Integer idEmpleado) throws Exception;
+
+    /**
+     * Obtiene resumen estadístico de citas
+     * @param fechaInicio Fecha de inicio
+     * @param fechaFin Fecha de fin
+     * @param idEmpleado Filtro por empleado
+     * @return Resumen con estadísticas de citas
+     * @throws Exception si hay error en la consulta
+     */
+    ResumenCitasDTO obtenerResumenCitas(LocalDate fechaInicio, LocalDate fechaFin,
+                                        Integer idEmpleado) throws Exception;
+
+
+
+
+    List<CitaDTO> obtenerCitasPorRangoFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) throws Exception;
+
+    /**
+     * Obtiene citas con múltiples filtros
+     */
+    List<CitaDTO> obtenerCitasConFiltros(LocalDateTime fechaInicio, LocalDateTime fechaFin,
+                                         String emailCliente, EstadoCita estado) throws Exception;
+
+    /**
+     * Busca citas por cliente (email)
+     */
+    List<CitaDTO> buscarCitasPorCliente(String busqueda) throws Exception;
+
+    /**
+     * Busca citas por servicio
+     */
+    List<CitaDTO> buscarCitasPorServicio(Servicio servicio) throws Exception;
+
+
 }
+
+
+
+
+

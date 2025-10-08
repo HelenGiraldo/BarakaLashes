@@ -8,7 +8,6 @@ import co.edu.uniquindio.BarakaLashes.repositorio.UsuarioRepositorio;
 import co.edu.uniquindio.BarakaLashes.servicio.UsuarioServicio;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -45,25 +44,31 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
         return usuario;
     }
+
+    @Override
     public List<Usuario> listarUsuarios() {
         return usuarioRepositorio.findAll();
     }
 
+    @Override
     public Usuario obtenerUsuarioPorId(Integer id) {
         return usuarioRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
     }
 
+    @Override
     public Usuario obtenerUsuarioPorEmail(String email) {
         return usuarioRepositorio.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
     }
 
+    @Override
     public Usuario obtenerUsuarioPorCedula(String cedula) {
         return usuarioRepositorio.findByCedula(cedula)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con cédula: " + cedula));
     }
 
+    @Override
     public Usuario actualizarUsuario(Integer id, Usuario usuarioActualizado) {
         Usuario usuarioExistente = obtenerUsuarioPorId(id);
 
@@ -90,6 +95,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return usuarioRepositorio.save(usuarioExistente);
     }
 
+    @Override
     public void eliminarUsuario(Integer id) {
         if (!usuarioRepositorio.existsById(id)) {
             throw new RuntimeException("Usuario a eliminar no encontrado con ID: " + id);
@@ -97,10 +103,12 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuarioRepositorio.deleteById(id);
     }
 
+    @Override
     public boolean existeUsuarioPorEmail(String email) {
         return usuarioRepositorio.existsByEmail(email);
     }
 
+    @Override
     public boolean existeUsuarioPorCedula(String cedula) {
         return usuarioRepositorio.existsByCedula(cedula);
     }
