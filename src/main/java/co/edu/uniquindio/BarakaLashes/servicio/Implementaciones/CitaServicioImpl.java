@@ -12,11 +12,15 @@ import co.edu.uniquindio.BarakaLashes.repositorio.CitaRepositorio;
 import co.edu.uniquindio.BarakaLashes.repositorio.UsuarioRepositorio;
 import co.edu.uniquindio.BarakaLashes.mappers.CitaMapper;
 import lombok.extern.slf4j.Slf4j;
-
 import co.edu.uniquindio.BarakaLashes.servicio.CitaServicio;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Collate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,11 +34,14 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+
 public class CitaServicioImpl implements CitaServicio {
 
     private final CitaRepositorio citaRepo;
     private final CitaMapper citaMapper;
     private final UsuarioRepositorio usuarioRepositorio;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Override
     public int crearCita(CitaDTO citaDTO) throws Exception {
@@ -466,6 +473,22 @@ public class CitaServicioImpl implements CitaServicio {
 
         log.info("Citas encontradas: {}", citasFiltradas.size());
         return convertirCitasADTO(citasFiltradas);
+    }
+
+    public List<Cita> obtenerCitasProximosDosDias() {
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime dentroDeDosDias = ahora.plusDays(2);
+        return citaRepo.findCitasEntreFechas(ahora, dentroDeDosDias);
+    }
+
+    /**
+     * Simula el envío del recordatorio
+     */
+    public void enviarRecordatorio(Cita cita) {
+        String mensaje = "📅 Recordatorio: Cita agendada para " + cita.getUsuario().getNombre() + " el " + cita.getFechaCita();
+        // Envía al canal específico del usuario (e.g., /topic/notificaciones/{email})
+        messagingTemplate.convertAndSend("/topic/notificaciones/" + cita.getUsuario().getEmail(), mensaje);
+        System.out.println("Notificación enviada vía WebSocket: " + mensaje);
     }
 
 }

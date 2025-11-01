@@ -114,4 +114,8 @@ public interface CitaRepositorio extends JpaRepository<Cita, Integer> {
             "AND c.estadoCita IN ('PENDIENTE', 'CONFIRMADA') " +
             "AND (:negocioId IS NULL OR c.negocio.idNegocio = :negocioId)")
     List<Cita> findCitasVencidas(@Param("negocioId") Integer negocioId);
+
+    @Query("SELECT c FROM Cita c WHERE c.fechaCita BETWEEN :inicio AND :fin")
+    List<Cita> findCitasEntreFechas(@Param("inicio") LocalDateTime inicio,
+                                    @Param("fin") LocalDateTime fin);
 }

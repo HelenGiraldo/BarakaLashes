@@ -5,6 +5,7 @@ import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaCalendarioDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.Cita.ResumenCitasDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
+import co.edu.uniquindio.BarakaLashes.modelo.Cita;
 import co.edu.uniquindio.BarakaLashes.modelo.Servicio;
 
 import java.time.LocalDate;
@@ -152,8 +153,8 @@ public interface CitaServicio {
      * Busca citas por servicio
      */
     List<CitaDTO> buscarCitasPorServicio(Servicio servicio) throws Exception;
-
-
+    List<Cita> obtenerCitasProximosDosDias();
+    void enviarRecordatorio(Cita cita);
 }
 
 
