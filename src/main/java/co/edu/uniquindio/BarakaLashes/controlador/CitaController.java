@@ -34,6 +34,12 @@ public class CitaController {
         return "crearCita";
     }
 
+    // NUEVO: Método para mostrar el catálogo de servicios
+    @GetMapping("/catalogo")
+    public String mostrarCatalogoServicios() {
+        return "catalogoServicios";
+    }
+
     @PostMapping("/nueva")
     public String crearCita(@ModelAttribute("cita") CitaDTO citaDTO,
                             HttpSession session,
@@ -259,8 +265,4 @@ public class CitaController {
                     Map.of("error", "Error al obtener horarios disponibles: " + e.getMessage()));
         }
     }
-
-
-
-
 }
