@@ -40,6 +40,8 @@ public class CitaController {
         return "catalogoServicios";
     }
 
+    // AGREGAR este método al CitaController existente:
+
     @PostMapping("/nueva")
     public String crearCita(@ModelAttribute("cita") CitaDTO citaDTO,
                             HttpSession session,
@@ -47,12 +49,15 @@ public class CitaController {
         try {
             int idCita = citaServicio.crearCita(citaDTO);
             redirectAttributes.addFlashAttribute("mensaje", "Cita creada exitosamente con ID: " + idCita);
+
             // Guardar email en sesión para mostrar historial correctamente
             if (citaDTO.getEmailCliente() != null) {
                 session.setAttribute("email", citaDTO.getEmailCliente());
             }
-            // Redirigir al historial de citas del usuario
-            return "redirect:/citas/historial";
+
+            // NUEVA LÍNEA: Redirigir a la pasarela de pago en lugar del historial
+            return "redirect:/facturacion/pagar/" + idCita;
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al crear la cita: " + e.getMessage());
             return "redirect:/citas/nueva?error";
@@ -265,4 +270,6 @@ public class CitaController {
                     Map.of("error", "Error al obtener horarios disponibles: " + e.getMessage()));
         }
     }
+
+
 }

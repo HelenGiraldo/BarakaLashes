@@ -378,8 +378,17 @@
                     <span th:text="${cita.descripcionCita}">Descripción de la cita</span>
                 </div>
 
+                <!-- AGREGAR este botón en la sección .cita-actions del historial.html -->
+
                 <div class="cita-actions">
-                    <!-- Botón de modificar: se convierte en button deshabilitado si no es modificable -->
+                    <!-- Botón de PAGAR (nuevo) -->
+                    <a th:if="${cita.estadoCita.toString() == 'PENDIENTE' || cita.estadoCita.toString() == 'CONFIRMADA'}"
+                       th:href="@{'/facturacion/pagar/' + ${cita.idCita}}"
+                       class="btn btn-pagar">
+                        <i class="fas fa-credit-card"></i> Pagar Cita
+                    </a>
+
+                    <!-- Botón de modificar -->
                     <a th:if="${cita.modificable}"
                        th:href="@{'/historial/modificar/' + ${cita.idCita}}"
                        class="btn btn-modificar">
@@ -393,12 +402,25 @@
                         <i class="fas fa-edit"></i> Modificar Cita
                     </button>
 
+                    <!-- Botón de cancelar -->
                     <form th:action="@{'/historial/cancelar/' + ${cita.idCita}}" method="post">
                         <button type="submit" class="btn btn-cancelar" th:disabled="${!cita.cancelable}">
                             <i class="fas fa-times"></i> Cancelar Cita
                         </button>
                     </form>
                 </div>
+
+                <!-- AGREGAR este CSS adicional en el <style> del historial.html -->
+                <style>
+                    .btn-pagar {
+                        background: #28a745;
+                        color: white;
+                    }
+
+                    .btn-pagar:hover {
+                        background: #218838;
+                    }
+                </style>
             </div>
         </div>
 
