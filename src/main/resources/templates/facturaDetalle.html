@@ -422,8 +422,8 @@
                         <td>
                             <strong th:text="${servicio}">Servicio</strong>
                         </td>
-                        <td class="text-right" th:text="${#numbers.formatCurrency(T(co.edu.uniquindio.BarakaLashes.servicio.FacturaServicio).obtenerPrecioServicio(servicio))}">
-                            $0.00
+                        <td th:text="${#numbers.formatCurrency(precios[servicio])}"></td>
+                        $0.00
                         </td>
                     </tr>
                     </tbody>

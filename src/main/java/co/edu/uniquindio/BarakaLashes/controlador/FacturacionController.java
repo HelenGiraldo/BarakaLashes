@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -56,7 +58,7 @@ public class FacturacionController {
             for (String servicioStr : cita.getServicios()) {
                 try {
                     Servicio servicio = Servicio.valueOf(servicioStr);
-                    subtotal += FacturaServicio.obtenerPrecioServicio(servicio);
+                    subtotal += facturaServicio.obtenerPrecioServicio(servicio);
                 } catch (IllegalArgumentException e) {
                     log.warn("Servicio no reconocido: {}", servicioStr);
                 }
@@ -138,13 +140,20 @@ public class FacturacionController {
 
             FacturaDTO factura = facturaServicio.obtenerFactura(idFactura);
 
-            // Verificar permisos
             if (!factura.getEmailUsuario().equals(usuarioEmail)) {
                 redirectAttributes.addFlashAttribute("error", "No tienes permiso para ver esta factura");
                 return "redirect:/citas/historial";
             }
 
+            // 🔹 Mapeamos servicio → precio
+            Map<String, Double> precios = new HashMap<>();
+            for (Servicio servicio : factura.getServicios()) {
+                precios.put(servicio.name(), facturaServicio.obtenerPrecioServicio(servicio));
+            }
+
             model.addAttribute("factura", factura);
+            model.addAttribute("precios", precios); // agregamos al modelo
+
             return "facturaDetalle";
 
         } catch (Exception e) {
@@ -153,6 +162,7 @@ public class FacturacionController {
             return "redirect:/citas/historial";
         }
     }
+
 
     /**
      * Muestra el historial de facturas del usuario

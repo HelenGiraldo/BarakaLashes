@@ -144,7 +144,7 @@ public class FacturaServicio {
     /**
      * Obtiene el precio de un servicio
      */
-    public static double obtenerPrecioServicio(Servicio servicio) {
+    public double obtenerPrecioServicio(Servicio servicio) {
         return PRECIOS_SERVICIOS.getOrDefault(servicio, 0.0);
     }
 }

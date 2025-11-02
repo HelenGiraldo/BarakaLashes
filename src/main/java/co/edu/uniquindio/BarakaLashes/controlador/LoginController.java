@@ -43,22 +43,42 @@ public class LoginController {
                         HttpSession session,
                         Model model) {
         try {
-            log.info("Intento de login para: {}", email);
+            // Logs para depuración: ver exactamente lo que llega
+            log.info(">>> Login request received. raw email='{}', raw password='{}'", email, password);
 
-            // Buscar usuario por email
-            Optional<Usuario> usuarioOpt = usuarioRepositorio.findByEmail(email);
+            // Normalizar entradas: quitar espacios alrededor
+            String emailNorm = email == null ? "" : email.trim();
+            String passwordNorm = password == null ? "" : password.trim();
+
+            log.info(">>> Normalized: email='{}', passwordLength={}", emailNorm, passwordNorm.length());
+
+            // 1) Chequeo hardcoded del admin (más robusto)
+            if ("admin@gmail.com".equalsIgnoreCase(emailNorm) && "admin123".equals(passwordNorm)) {
+                log.info(">>> Autenticación ADMIN correcta");
+                session.setAttribute("usuarioEmail", "admin@gmail.com");
+                session.setAttribute("usuarioNombre", "Administrador");
+                session.setAttribute("usuarioRol", "ADMIN");
+                session.setAttribute("usuarioAutenticado", true);
+                return "redirect:/usuarios";
+            }
+
+            // 2) Si no es admin, seguir con BD
+            Optional<Usuario> usuarioOpt = usuarioRepositorio.findByEmail(emailNorm);
 
             if (usuarioOpt.isEmpty()) {
-                log.warn("Usuario no encontrado: {}", email);
+                log.warn("Usuario no encontrado en BD: {}", emailNorm);
                 model.addAttribute("error", "Usuario no encontrado");
                 return "login";
             }
 
             Usuario usuario = usuarioOpt.get();
 
-            // Comparar contraseña directamente (sin encriptar)
-            if (!password.equals(usuario.getPassword())) {
-                log.warn("Contraseña incorrecta para: {}", email);
+            // Comparar contraseña (sin encriptar). Normalizamos también la de la BD por si trae espacios
+            String passBD = usuario.getPassword() == null ? "" : usuario.getPassword().trim();
+
+            if (!passwordNorm.equals(passBD)) {
+                log.warn("Contraseña incorrecta para: {} (password enviada len={}, passwordBD len={})",
+                        emailNorm, passwordNorm.length(), passBD.length());
                 model.addAttribute("error", "Contraseña incorrecta");
                 return "login";
             }
@@ -69,8 +89,7 @@ public class LoginController {
             session.setAttribute("usuarioNombre", usuario.getNombre());
             session.setAttribute("usuarioAutenticado", true);
 
-            log.info(" Login exitoso para: {}", email);
-
+            log.info("Login exitoso para usuario normal: {}", emailNorm);
             return "redirect:/home";
 
         } catch (Exception e) {
