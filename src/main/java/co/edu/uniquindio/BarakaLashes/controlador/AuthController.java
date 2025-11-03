@@ -78,7 +78,7 @@ public class AuthController {
     }
 
     /**
-     * Procesar login
+     * Procesar login - VERSIÓN CORREGIDA
      */
     @PostMapping("/login")
     public String procesarLogin(@RequestParam String email,
@@ -88,39 +88,63 @@ public class AuthController {
         try {
             log.info("=== INTENTO DE LOGIN - Email: {} ===", email);
 
-            boolean valido = authServicio.validarCredenciales(email, password);
+            // Normalizar entradas
+            String emailNorm = email == null ? "" : email.trim();
+            String passwordNorm = password == null ? "" : password.trim();
+
+            log.info(">>> Credenciales normalizadas: email='{}', passwordLength={}", emailNorm, passwordNorm.length());
+
+            // 1. PRIMERO VERIFICAR SI ES ADMIN
+            if ("admin@gmail.com".equalsIgnoreCase(emailNorm) && "admin123".equals(passwordNorm)) {
+                log.info(">>> AUTENTICACIÓN ADMIN EXITOSA");
+
+                // Guardar información de admin en sesión
+                session.setAttribute("usuarioEmail", "admin@gmail.com");
+                session.setAttribute("usuarioNombre", "Administrador");
+                session.setAttribute("usuarioId", 0); // ID especial para admin
+                session.setAttribute("usuarioRol", "ADMIN");
+                session.setAttribute("usuarioAutenticado", true);
+
+                log.info(">>> Redirigiendo a /usuarios");
+                return "redirect:/usuarios";
+            }
+
+            // 2. SI NO ES ADMIN, VERIFICAR EN BD
+            log.info(">>> No es admin, verificando en BD...");
+            boolean valido = authServicio.validarCredenciales(emailNorm, passwordNorm);
 
             if (valido) {
                 // Obtener el usuario para guardar toda su información en sesión
-                Optional<Usuario> usuarioOpt = usuarioRepositorio.findByEmail(email);
+                Optional<Usuario> usuarioOpt = usuarioRepositorio.findByEmail(emailNorm);
 
                 if (usuarioOpt.isPresent()) {
                     Usuario usuario = usuarioOpt.get();
 
                     // GUARDAR EN SESIÓN TODA LA INFORMACIÓN DEL USUARIO
                     session.setAttribute("usuarioEmail", usuario.getEmail());
-                    session.setAttribute("email", usuario.getEmail()); // Por compatibilidad
+                    session.setAttribute("email", usuario.getEmail());
                     session.setAttribute("usuarioId", usuario.getIdUsuario());
                     session.setAttribute("usuarioNombre", usuario.getNombre());
+                    session.setAttribute("usuarioRol", usuario.getRol().name());
                     session.setAttribute("usuarioAutenticado", true);
 
-                    log.info("LOGIN EXITOSO - Usuario: {} (ID: {})", usuario.getEmail(), usuario.getIdUsuario());
-                    log.info("Datos guardados en sesión correctamente");
+                    log.info("LOGIN EXITOSO - Usuario: {} (ID: {}, Rol: {})",
+                            usuario.getEmail(), usuario.getIdUsuario(), usuario.getRol());
 
                     redirectAttributes.addFlashAttribute("success", "¡Bienvenido " + usuario.getNombre() + "!");
                     return "redirect:/citas/nueva";
                 } else {
-                    log.error(" Usuario encontrado por validación pero no en BD");
+                    log.error("Usuario encontrado por validación pero no en BD");
                     redirectAttributes.addFlashAttribute("error", "Error en el sistema");
                     return "redirect:/auth/login";
                 }
             } else {
-                log.warn("Credenciales incorrectas para: {}", email);
+                log.warn("Credenciales incorrectas para: {}", emailNorm);
                 redirectAttributes.addFlashAttribute("error", "Credenciales incorrectas");
                 return "redirect:/auth/login";
             }
         } catch (Exception e) {
-            log.error(" Error en login: {}", e.getMessage(), e);
+            log.error("Error en login: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("error", "Error al iniciar sesión");
             return "redirect:/auth/login";
         }

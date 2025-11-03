@@ -170,6 +170,24 @@
             text-decoration: underline;
         }
 
+        .admin-hint {
+            margin-top: 25px; /* Añadido para bajar la sección */
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #764ba2;
+        }
+
+        .admin-hint p {
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .admin-hint strong {
+            color: #764ba2;
+        }
+
         @media (max-width: 480px) {
             .login-container {
                 padding: 30px 20px;
@@ -222,6 +240,14 @@
             Iniciar Sesión
         </button>
     </form>
+
+    <div class="admin-hint">
+        <p><i class="fas fa-info-circle"></i>  <strong>Acceso de Administrador:</strong></p>
+        <p style="margin-top: 7px; font-size: 0.8rem;">
+            Email: admin@gmail.com<br>
+            Contraseña: admin123
+        </p>
+    </div>
 
     <div class="form-footer">
         <p>¿No tienes cuenta? <a th:href="@{/auth/registro}">Regístrate aquí</a></p>
