@@ -194,7 +194,6 @@ public class CitaController {
             model.addAttribute("error", "Error al cargar las citas: " + e.getMessage());
             model.addAttribute("citas", Collections.emptyList());
         }
-
         return "historial";
     }
 
@@ -254,7 +253,6 @@ public class CitaController {
         }
     }
 
-
     @GetMapping("/disponibilidad")
     @ResponseBody
     public ResponseEntity<?> obtenerHorariosDisponibles(
@@ -271,5 +269,9 @@ public class CitaController {
         }
     }
 
+    @GetMapping("/recordatorio")
+    public String mostrarRecordatorio(){
+        return "recordatorio";
+    }
 
 }

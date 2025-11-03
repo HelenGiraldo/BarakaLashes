@@ -38,7 +38,7 @@
     const userEmail = "cliente@barakalashes.com";
 
     // Conexión al endpoint configurado en tu backend
-    const socket = new SockJS('/ws');
+    const socket = new SockJS('/citas/notificaciones');
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {

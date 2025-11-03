@@ -490,5 +490,4 @@ public class CitaServicioImpl implements CitaServicio {
         messagingTemplate.convertAndSend("/topic/notificaciones/" + cita.getUsuario().getEmail(), mensaje);
         System.out.println("Notificación enviada vía WebSocket: " + mensaje);
     }
-
 }
