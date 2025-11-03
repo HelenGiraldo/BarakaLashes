@@ -17,7 +17,7 @@ public class RecordatorioSchedulerServiceImpl implements RecordatorioSchedulerSe
     }
     @Override
     // Se ejecuta todos los días a las 8:00 a.m. (SIN parámetros, ya que @Scheduled no los permite)
-    @Scheduled(cron = "0 08 19 * * *", zone = "America/Bogota")
+    @Scheduled(cron = "0 08 15 * * *", zone = "America/Bogota")
     public void ejecutarRecordatoriosDiarios() throws Exception {  // QUITADO: String userEmail
         System.out.println("🕗 [Scheduler] Ejecutando recordatorios diarios: " + LocalDateTime.now());
         // Obtiene TODAS las citas de los próximos 2 días (de todos los usuarios)
