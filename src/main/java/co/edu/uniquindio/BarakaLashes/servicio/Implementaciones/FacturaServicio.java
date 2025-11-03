@@ -36,7 +36,7 @@ public class FacturaServicio {
     private static final double IVA_PORCENTAJE = 0.19;
 
     /**
-     * Crea una factura a partir de una cita
+     * Crea una factura a partir de una cita y ACTUALIZA el estado a CONFIRMADO
      */
     @Transactional
     public FacturaDTO crearFacturaDesdeIdCita(Integer idCita) throws Exception {
@@ -44,6 +44,11 @@ public class FacturaServicio {
 
         Cita cita = citaRepo.findById(idCita)
                 .orElseThrow(() -> new Exception("Cita no encontrada"));
+
+        // ✅ ACTUALIZAR ESTADO DE LA CITA A CONFIRMADO
+        cita.setEstadoCita(EstadoCita.CONFIRMADA);
+        citaRepo.save(cita);
+        log.info("Estado de cita actualizado a CONFIRMADO para cita ID: {}", idCita);
 
         Usuario usuario = cita.getUsuario();
         Set<Servicio> serviciosSet = cita.getListaServicios();
