@@ -1,5 +1,5 @@
 package co.edu.uniquindio.BarakaLashes.servicio;
 
 public interface RecordatorioSchedulerService {
-    void ejecutarRecordatoriosDiarios();
+    void ejecutarRecordatoriosDiarios() throws Exception;
 }

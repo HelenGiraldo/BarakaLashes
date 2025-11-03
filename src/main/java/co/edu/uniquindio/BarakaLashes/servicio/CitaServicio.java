@@ -154,7 +154,7 @@ public interface CitaServicio {
      */
     List<CitaDTO> buscarCitasPorServicio(Servicio servicio) throws Exception;
     List<Cita> obtenerCitasProximosDosDias();
-    void enviarRecordatorio(Cita cita);
+    void enviarRecordatorio(Cita cita) throws Exception;
 }
 
 

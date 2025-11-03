@@ -4,6 +4,7 @@ import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaActualizadaDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.Cita.CitaCalendarioDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.Cita.ResumenCitasDTO;
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
+import co.edu.uniquindio.BarakaLashes.DTO.EmailDTO;
 import co.edu.uniquindio.BarakaLashes.modelo.Cita;
 import co.edu.uniquindio.BarakaLashes.modelo.EstadoCita;
 import co.edu.uniquindio.BarakaLashes.modelo.Servicio;
@@ -11,6 +12,7 @@ import co.edu.uniquindio.BarakaLashes.modelo.Usuario;
 import co.edu.uniquindio.BarakaLashes.repositorio.CitaRepositorio;
 import co.edu.uniquindio.BarakaLashes.repositorio.UsuarioRepositorio;
 import co.edu.uniquindio.BarakaLashes.mappers.CitaMapper;
+import co.edu.uniquindio.BarakaLashes.servicio.EmailServicio;
 import lombok.extern.slf4j.Slf4j;
 import co.edu.uniquindio.BarakaLashes.servicio.CitaServicio;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,8 @@ public class CitaServicioImpl implements CitaServicio {
     private final CitaRepositorio citaRepo;
     private final CitaMapper citaMapper;
     private final UsuarioRepositorio usuarioRepositorio;
+    private final EmailServicio emailService;
+
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
@@ -484,10 +488,11 @@ public class CitaServicioImpl implements CitaServicio {
     /**
      * Simula el envío del recordatorio
      */
-    public void enviarRecordatorio(Cita cita) {
-        String mensaje = "📅 Recordatorio: Cita agendada para " + cita.getUsuario().getNombre() + " el " + cita.getFechaCita();
-        // Envía al canal específico del usuario (e.g., /topic/notificaciones/{email})
-        messagingTemplate.convertAndSend("/topic/notificaciones/" + cita.getUsuario().getEmail(), mensaje);
-        System.out.println("Notificación enviada vía WebSocket: " + mensaje);
-    }
+    public void enviarRecordatorio(Cita cita) throws Exception {
+        emailService.sendMail(
+                new EmailDTO("Rcordatorio cita de: " + cita.getUsuario().getNombre(),
+                        "El usuario " + cita.getUsuario().getNombre() +
+                                " tiene un cita pendiente registrada para el día " + cita.getFechaCita() +
+                                " La información del la cita es:  " + cita.getDescripcionCita(),cita.getUsuario().getEmail())
+        );}
 }

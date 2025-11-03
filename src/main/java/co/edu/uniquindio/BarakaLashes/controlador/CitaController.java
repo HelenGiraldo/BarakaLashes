@@ -28,6 +28,7 @@ public class CitaController {
 
     private final CitaServicio citaServicio;
 
+
     @GetMapping("/nueva")
     public String mostrarFormularioCita(Model model) {
         model.addAttribute("cita", new CitaDTO());
