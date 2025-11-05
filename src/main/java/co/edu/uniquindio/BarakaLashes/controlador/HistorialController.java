@@ -2,7 +2,6 @@ package co.edu.uniquindio.BarakaLashes.controlador;
 
 import co.edu.uniquindio.BarakaLashes.DTO.CitaDTO;
 import co.edu.uniquindio.BarakaLashes.mappers.CitaMapper;
-import co.edu.uniquindio.BarakaLashes.modelo.Cita;
 import co.edu.uniquindio.BarakaLashes.modelo.Servicio;
 import co.edu.uniquindio.BarakaLashes.servicio.CitaServicio;
 import jakarta.servlet.http.HttpSession;
